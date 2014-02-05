@@ -1,7 +1,9 @@
 scripts_for_epics
 =================
 
-installation scripts for EPICS base and its selected extensions
+Some Installation scripts for EPICS base and its selected extensions
+
+
 
 1. epics_default_installation.sh
 
