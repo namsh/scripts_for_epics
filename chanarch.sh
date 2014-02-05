@@ -105,7 +105,7 @@ EXT_SRC=${EPICS_EXTENSIONS}/src
 chanarch_filename=epicschanarch.tar.gz
 cd ${EPICS_EXTENSIONS}/src
 echo $PWD
-#    $wget_options -O ${chanarch_filename} http://epicschanarch.cvs.sourceforge.net/viewvc/epicschanarch/?view=tar
+$wget_options -O ${chanarch_filename} http://epicschanarch.cvs.sourceforge.net/viewvc/epicschanarch/?view=tar
 $tar_command ${chanarch_filename} --strip-components=1
 
 #cd ${EXT_SRC}/${chanarch_name}
