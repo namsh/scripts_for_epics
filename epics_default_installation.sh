@@ -3,7 +3,7 @@
 # Author : Jeong Han Lee
 # email  : jhlee@ibs.re.kr
 # Date   : Tuesday, December 31 16:20:08 KST 2013
-# version : 0.0.2
+# version : 0.0.4
 #
 #   * I intend to develop this script in order to reduce the painful
 #     copy and paste from EPICS and its extensions installation logs
@@ -51,8 +51,12 @@
 # 2. How about Modules, e.g. SEQ, ASYN, and so on. 
 # 3. Seperate EPICS base, Extensions, and so on...
 #
-
-
+#  bash epics_default_installation.sh "/data/programs/"
+#  install EPICS in /data/programs/epics
+#
+#  bash epics_default_installation.sh 
+#  - install EPICS in ${HOME}/epics
+#
 # cq   : quiet 
 # c    : verbose
 wget_options="wget -cq"
@@ -122,13 +126,32 @@ base_version="3.14.12.4"
 base_filename="baseR${base_version}.tar.gz"
 base_raw_dirname="base-${base_version}"
 
-EPICS=${HOME}/epics
+if [ -f $1xtn_conf_os ]; then
+    mv ${extn_conf_os} ${extn_conf_os}_original
+#     sed -e 's/\/usr\/lib64/\/usr\/lib\/'${EXTN_LIB_ARCH}'/g'  ${extn_conf_os}_old > ${extn_conf_os}
+fi
+
+if [ -z "${PATH}" ]; then
+    PATH=${EPICS_EXTENSIONS}/bin/${EPICS_HOST_ARCH}; 
+else
+    PATH=${EPICS_EXTENSIONS}/bin/${EPICS_HOST_ARCH}:$PATH; 
+fi
+
+
+
+
+target_dir=$1
+
+if [ -z "${target_dir}" ]; then
+    target_dir=${HOME}
+fi
+
+EPICS=${target_dir}/epics
 EPICS_BASE=${EPICS}/${base_raw_dirname}
 
 current_dir=$PWD
 
-
-mkdir ${EPICS}
+mkdir -p ${EPICS}
 
 cd ${EPICS}
 
@@ -167,7 +190,7 @@ export EPICS
 export EPICS_BASE
 
 cd ${EPICS_BASE}
-#make clean uninstall
+make clean uninstall
 make  -j 
 
 
