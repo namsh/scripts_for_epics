@@ -349,5 +349,8 @@ else
 fi
 
 
-echo $USERNAME
+
+
+
+
 exit
