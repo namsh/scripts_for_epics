@@ -2,8 +2,8 @@
 # Shell  : epics_default_installation.sh
 # Author : Jeong Han Lee
 # email  : jhlee@ibs.re.kr
-# Date   : Tuesday, December 31 16:20:08 KST 2013
-# version : 0.0.4
+# Date   : Monday, August 25 21:01:19 KST 2014
+# version : 0.1.0
 #
 #   * I intend to develop this script in order to reduce the painful
 #     copy and paste from EPICS and its extensions installation logs
@@ -42,48 +42,45 @@
 #  - 0.0.3 Wednesday, January  1 19:26:03 KST 2014, jhlee
 #          * refine, .... 
 #
+#  - 0.1.0 Monday, August 25 21:01:45 KST 2014, jhlee
+#          * Re-design in order to follow RAON EPICS directory
+#            structure as follows:
+#            ${HOME}/epics/R3.14.12.4/{base,extensions,siteLibs,siteApps}
 #
 #
-# TO-DO-LIST
-# 1. Enviroment settings could add EPICS env again, and again, and again...........
-#    it should introduce the better way to reset the old enviroment, 
-#     if the old env has EPICS envs. 
-# 2. How about Modules, e.g. SEQ, ASYN, and so on. 
-# 3. Seperate EPICS base, Extensions, and so on...
-#
-#  bash epics_default_installation.sh "/data/programs/"
-#  install EPICS in /data/programs/epics
-#
-#  bash epics_default_installation.sh 
-#  - install EPICS in ${HOME}/epics
+
+
 #
 # cq   : quiet 
 # c    : verbose
-wget_options="wget -cq"
+wget_options="wget -c"
 # xzf  : quiet
 # xzfv : verbose
 tar_command="tar xzf"
+
 
 this_script_name=`basename $0`
 LOGDATE=`date +%Y.%m.%d.%H:%M`
 epics_download_site="http://www.aps.anl.gov/epics/download/"
 host_name=${HOSTNAME}
 user_name=${USERNAME}
-output_filename="thisepicsall"
+output_filename="setEpicsEnv"
+
+
 
 make_ext()
 {
     extn_name=$1
     extn_filename=${extn_name}.tar.gz 
-    cd $EPICS_EXTENSIONS/src
-    $wget_options ${epics_download_site}/extensions/${extn_filename}
-    $tar_command ${extn_filename}
-    cd ${extn_name}
+    cd ${EPICS}/downloads
+    $wget_options ${epics_download_site}/extensions/${extn_filename} 
+    $tar_command ${extn_filename} -C ${current_epics_extensions}/src
+    cd ${current_epics_extensions}/src/${extn_name}
     make  
 
 }   
 
-make_thisepicsall()
+make_setEpicsEnv()
 {
     output=$1
     echo "#!/bin/bash"  >>$output
@@ -93,16 +90,16 @@ make_thisepicsall()
     echo "# Generated at  $LOGDATE"    >>$output
     echo "#           on  $host_name"  >>$output
     echo "#           by  $user_name" >> $output
-    echo "# version : 0.0.2"  >>$output
+    echo "# version : 0.1.0"  >>$output
     echo "#   * This script is genenated by $this_script_name." >>$output
     echo "#     In order to setup EPICS base and its extentions correctly," >>$output
     echo "#     please run the following command:">>$output
-    echo "#     . thisepicsall.sh " >> $output
+    echo "#     . ${EPICS}/setEpicsEnv.sh " >> $output
     echo "" >>$output
     echo "" >>$output
     echo "export EPICS_HOST_ARCH=${EPICS_HOST_ARCH}" >>$output
-    echo "export EPICS_BASE=${EPICS_BASE}" >>$output
-    echo "export EPICS_EXTENSIONS=${EPICS_EXTENSIONS}" >>$output
+    echo "export EPICS_BASE=${current_epics_base}" >>$output
+    echo "export EPICS_EXTENSIONS=${current_epics_extenstions}" >>$output
     echo "export PATH=${PATH}" >>$output
     echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >>$output
     
@@ -115,57 +112,97 @@ make_thisepicsall()
 
 }
 
-
-###
-###
-###  EPICS base
-###
-###
-
-base_version="3.14.12.4"
-base_filename="baseR${base_version}.tar.gz"
-base_raw_dirname="base-${base_version}"
-
-if [ -f $1xtn_conf_os ]; then
-    mv ${extn_conf_os} ${extn_conf_os}_original
-#     sed -e 's/\/usr\/lib64/\/usr\/lib\/'${EXTN_LIB_ARCH}'/g'  ${extn_conf_os}_old > ${extn_conf_os}
-fi
-
-if [ -z "${PATH}" ]; then
-    PATH=${EPICS_EXTENSIONS}/bin/${EPICS_HOST_ARCH}; 
-else
-    PATH=${EPICS_EXTENSIONS}/bin/${EPICS_HOST_ARCH}:$PATH; 
-fi
-
-
-
-
-target_dir=$1
-
-if [ -z "${target_dir}" ]; then
-    target_dir=${HOME}
-fi
-
-EPICS=${target_dir}/epics
-EPICS_BASE=${EPICS}/${base_raw_dirname}
-
-current_dir=$PWD
-
-mkdir -p ${EPICS}
-
-cd ${EPICS}
-
-$wget_options ${epics_download_site}/base/${base_filename}
-$tar_command ${base_filename}
-
-# What are we running on?
-# copy the following code from vlinac shell scripts
-#  2013.12.31 jhlee
 #
+#  The drop_from_path was copied from thisepics.all script, to set up the ROOT build
+#  , located in ${ROOTSYS}/bin/
+#  Monday, August 25 20:49:41 KST 2014, jhlee
+
+
+drop_from_path()
+{
+   # Assert that we got enough arguments
+   if test $# -ne 2 ; then
+      echo "drop_from_path: needs 2 arguments"
+      return 1
+   fi
+
+   p=$1
+   drop=$2
+
+   newpath=`echo $p | sed -e "s;:${drop}:;:;g" \
+                          -e "s;:${drop};;g"   \
+                          -e "s;${drop}:;;g"   \
+                          -e "s;${drop};;g"`
+}
+
+
+print_export()
+{
+    if test $# -ne 1 ; then
+	echo "print_export: needs 1 arguments"
+	return 1
+    fi
+
+    explain=$1
+
+
+    echo ""
+    echo " >> ${explain} "
+    echo " >> EPICS_BASE       : " $EPICS_BASE
+    echo " >> EPICS_EXTENSIONS : " $EPICS_EXTENSIONS
+    echo " >> PATH             : " $PATH
+    echo " >> LD_LIBRARY_PATH  : " $LD_LIBRARY_PATH
+    echo ""
+}
+
+
+
+#
+# For example,
+# bash scripts_for_epics/epics_default_installation.sh  R3.14.12.2
+#
+
+default_version="3.14.12.4"
+base_version=$1
+
+if [ -z "${base_version}" ]; then
+    base_version=${default_version}
+fi
+
+base_filename="baseR${base_version}.tar.gz"
+
+# echo $base_version
+# echo $base_filename
+
+target_dir=${HOME}
+
+EPICS=${target_dir}/epics/R${base_version}
+
+# Move the target directory ${HOME}
+cd ${target_dir}
+
+mkdir -p ${EPICS}/{siteLibs,siteApps,downloads}
+
+cd ${EPICS}/downloads
+
+echo "${epics_download_site}/base/${base_filename}"
+
+$wget_options ${epics_download_site}/base/${base_filename} 
+
+$tar_command ${base_filename}  --transform 's/base-'${base_version}'/base/' -C ${EPICS}
+
+
+# copy the following code from vlinac shell scripts
+# 
+#  2013.12.31 jhlee
+# 
+# touch i386 lib_arch, and uname option
+# Monday, August 25 20:12:38 KST 2014, jhlee
+#
+
 case `uname -sm` in
     "Linux i386" | "Linux i486" | "Linux i586" | "Linux i686")
         EPICS_HOST_ARCH=linux-x86
-
 	EXTN_LIB_ARCH=i386-linux-gnu
         ;;
     "Linux x86_64")
@@ -186,56 +223,61 @@ esac
 # # export EPICS enviromental settings for compiling...
 # #
 export EPICS_HOST_ARCH
-export EPICS
-export EPICS_BASE
 
-cd ${EPICS_BASE}
-make clean uninstall
+current_epics_base=${EPICS}/base
+
+cd ${current_epics_base}
+#make clean uninstall
 make  -j 
 
+print_export "Before EPICS settings"
 
-# The following enviroment settings could add EPICS env again, and again, and again....
-# it should introduce the better way to reset the old enviroment, if the old env has
-# EPICS envs. 
-# 2014.1.1  02:35 jhlee
+
+if [ -n "${EPICS_BASE}" ] ; then
+    old_epics_base=${EPICS_BASE}
+fi
+
+
+if [ -n "${old_epics_base}" ] ; then
+    if [ -n "${PATH}" ]; then
+	drop_from_path $PATH ${old_epics_base}/bin/${EPICS_HOST_ARCH}
+	PATH=$newpath
+    fi
+    if [ -n "${LD_LIBRARY_PATH}" ]; then
+	drop_from_path $LD_LIBRARY_PATH ${old_epics_base}/lib/${EPICS_HOST_ARCH}
+	LD_LIBRARY_PATH=$newpath
+    fi
+ fi
+
 
 if [ -z "${PATH}" ]; then
-    PATH=${EPICS_BASE}/bin/${EPICS_HOST_ARCH}; 
+    PATH=${current_epics_base}/bin/${EPICS_HOST_ARCH}; 
 else
-    PATH=${EPICS_BASE}/bin/${EPICS_HOST_ARCH}:$PATH; 
+    PATH=${current_epics_base}/bin/${EPICS_HOST_ARCH}:$PATH; 
 fi
 
 
 if [ -z "${LD_LIBRARY_PATH}" ]; then
-    LD_LIBRARY_PATH=${EPICS_BASE}/lib/${EPICS_HOST_ARCH}; 
+    LD_LIBRARY_PATH=${current_epics_base}/lib/${EPICS_HOST_ARCH}; 
 else
-    LD_LIBRARY_PATH=${EPICS_BASE}/lib/${EPICS_HOST_ARCH}:$LD_LIBRARY_PATH;
+    LD_LIBRARY_PATH=${current_epics_base}/lib/${EPICS_HOST_ARCH}:$LD_LIBRARY_PATH;
 fi
 
-
-###
-###
-###  EPICS extensions
-###
-###
 
 
 extn_version="20120904"
 extn_filename="extensionsTop_${extn_version}.tar.gz"
-extn_raw_dirname="extensions_for_${base_version}"
 
-cd ${EPICS}
-
+cd ${EPICS}/downloads
 $wget_options ${epics_download_site}/extensions/${extn_filename}
-$tar_command ${extn_filename} --transform 's/extensions/'${extn_raw_dirname}'/'
+$tar_command ${extn_filename} -C ${EPICS}
 
-EPICS_EXTENSIONS=${EPICS}/${extn_raw_dirname}
+current_epics_extensions=${EPICS}/extensions
+export current_epics_extension
 
-export EPICS_EXTENSIONS
 
-
-# # # #CONFIG_SITE.linux-x86_64.linux-x86_64 file in extensions/configure/os 
-# # # # modify 
+##CONFIG_SITE.linux-x86_64.linux-x86_64 file in extensions/configure/os 
+## modify 
 
 ##
 ## create  "${EPICS_EXTENSIONS}/configure/RELEASE"
@@ -243,17 +285,17 @@ export EPICS_EXTENSIONS
 ## EPICS_BASE and EPICS_EXTENSIONS
 ## 
 
-
-
-extn_release="${EPICS_EXTENSIONS}/configure/RELEASE"
+extn_release="${current_epics_extensions}/configure/RELEASE"
 
 if [ -f $extn_release ]; then
     mv ${extn_release} ${extn_release}_original
 #     sed -e 's/..\/base/..\/'${base_raw_dirname}'/g'  ${extn_release}_old > ${extn_release}
 fi
+
 touch ${extn_release}
-echo -e 'EPICS_BASE=$(TOP)/../'${base_raw_dirname}'' >> $extn_release
+echo -e 'EPICS_BASE=$(TOP)/../base' >> $extn_release
 echo -e 'EPICS_EXTENSIONS=$(TOP)' >> $extn_release
+
 
 
 ##
@@ -261,7 +303,7 @@ echo -e 'EPICS_EXTENSIONS=$(TOP)' >> $extn_release
 ## if the file exists, remove it to name_old, then create one according to its EXTN_LIB_ARCH
 ## 
 
-extn_conf_os="${EPICS_EXTENSIONS}/configure/os/CONFIG_SITE.${EPICS_HOST_ARCH}.${EPICS_HOST_ARCH}"
+extn_conf_os="${current_epics_extensions}/configure/os/CONFIG_SITE.${EPICS_HOST_ARCH}.${EPICS_HOST_ARCH}"
 
 if [ -f $extn_conf_os ]; then
     mv ${extn_conf_os} ${extn_conf_os}_original
@@ -285,10 +327,8 @@ echo "XRTGRAPH_EXTENSIONS ="  >>$extn_conf_os
 echo "XRTGRAPH =" >>$extn_conf_os
 
 
-
-# #EXTN_LIST="StripTool2_5_15_0"
-
-EXTN_LIST="StripTool2_5_15_0 alh1_2_31 medm3_1_8_1 probe1_1_7_1 msi1-6 cau_20130110 dbVerbose_20130124 gnuregex0_13 nameserver2_0_0_12"
+#EXTN_LIST="StripTool2_5_16_0"
+EXTN_LIST="StripTool2_5_16_0 alh1_2_34 medm3_1_9 probe1_1_8_0 msi1-6 cau_20130110 dbVerbose_20130124 gnuregex0_13 nameserver2_0_0_12"
 
 
 for d in $EXTN_LIST
@@ -297,32 +337,43 @@ do
 done
 
 
+if [ -n "${EPICS_EXTENSIONS}" ] ; then
+    old_epics_extn=${EPICS_EXTENSIONS}
+fi
 
-# The following enviroment settings could add EPICS env again, and again, and again....
-# it should introduce the better way to reset the old enviroment, if the old env has
-# EPICS envs. 
-# 2014.1.1  02:35 jhlee
+
+if [ -n "${old_epics_extn}" ] ; then
+    if [ -n "${PATH}" ]; then
+	drop_from_path $PATH ${old_epics_extn}/bin/${EPICS_HOST_ARCH}
+	PATH=$newpath
+    fi
+    if [ -n "${LD_LIBRARY_PATH}" ]; then
+	drop_from_path $LD_LIBRARY_PATH ${old_epics_extn}/lib/${EPICS_HOST_ARCH}
+	LD_LIBRARY_PATH=$newpath
+    fi
+ fi
 
 
 if [ -z "${PATH}" ]; then
-    PATH=${EPICS_EXTENSIONS}/bin/${EPICS_HOST_ARCH}; 
+    PATH=${current_epics_extensions}/bin/${EPICS_HOST_ARCH}; 
 else
-    PATH=${EPICS_EXTENSIONS}/bin/${EPICS_HOST_ARCH}:$PATH; 
+    PATH=${current_epics_extensions}/bin/${EPICS_HOST_ARCH}:$PATH; 
 fi
 
 
 if [ -z "${LD_LIBRARY_PATH}" ]; then
-    LD_LIBRARY_PATH=${EPICS_EXTENSIONS}/lib/${EPICS_HOST_ARCH}; 
+    LD_LIBRARY_PATH=${current_epics_extensions}/lib/${EPICS_HOST_ARCH}; 
 else
-    LD_LIBRARY_PATH=${EPICS_EXTENSIONS}/lib/${EPICS_HOST_ARCH}:$LD_LIBRARY_PATH;
+    LD_LIBRARY_PATH=${current_epics_extensions}/lib/${EPICS_HOST_ARCH}:$LD_LIBRARY_PATH;
 fi
 
 
 
-cd ${current_dir}
-#echo $current_dir
+print_export "After EPICS setting"
 
-outputfile="${current_dir}/${output_filename}.sh"
+cd ${HOME}
+
+outputfile="${EPICS}/${output_filename}.sh"
 
 #echo $outputfile
 if [ -f $outputfile ]; then
@@ -339,8 +390,8 @@ if [ -f $outputfile ]; then
 	echo " ---------------------snip snip------------------------"
 	echo ""
 	echo "export EPICS_HOST_ARCH=${EPICS_HOST_ARCH}"
-	echo "export EPICS_BASE=${EPICS_BASE}"
-	echo "export EPICS_EXTENSIONS=${EPICS_EXTENSIONS}"
+	echo "export EPICS_BASE=${current_epics_base}"
+	echo "export EPICS_EXTENSIONS=${current_epics_extensions}"
 	echo "export PATH=${PATH}" 
 	echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 	echo ""
@@ -348,27 +399,11 @@ if [ -f $outputfile ]; then
 	exit
     fi
 
-    # touch $outputfile
-    # echo "#!/bin/bash"  >>$outputfile
-    # echo "# Shell  : thisepicsall.sh"  >>$outputfile
-    # echo "# Author : Jeong Han Lee"  >>$outputfile
-    # echo "# email  : jhlee@ibs.re.kr"  >>$outputfile
-    # echo "# Date   : December 31 22:07:00 KST 2013"  >>$outputfile
-    # echo "# version : 0.0.1"  >>$outputfile
-    # echo "" >>$outputfile
-    # echo "" >>$outputfile
-    # echo "export EPICS_HOST_ARCH=${EPICS_HOST_ARCH}" >>$outputfile
-    # echo "export EPICS_BASE=${EPICS_BASE}" >>$outputfile
-    # echo "export EPICS_EXTENSIONS=${EPICS_EXTENSIONS}" >>$outputfile
-    # echo "export PATH=${PATH}" >>$outputfile
-    # echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >>$outputfile
-    
-    # chmod +x $outputfile
     mv ${outputfile} ${outputfile}_bak
-    make_thisepicsall $outputfile
+    make_setEpicsEnv $outputfile
 
 else
-    make_thisepicsall $outputfile
+    make_setEpicsEnv $outputfile
 fi
 
 
