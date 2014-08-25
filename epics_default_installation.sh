@@ -3,7 +3,7 @@
 # Author : Jeong Han Lee
 # email  : jhlee@ibs.re.kr
 # Date   : Monday, August 25 21:01:19 KST 2014
-# version : 0.1.0
+# version : 0.1.1
 #
 #   * I intend to develop this script in order to reduce the painful
 #     copy and paste from EPICS and its extensions installation logs
@@ -47,7 +47,10 @@
 #            structure as follows:
 #            ${HOME}/epics/R3.14.12.4/{base,extensions,siteLibs,siteApps}
 #
-#
+#  - 0.1.1 Tuesday, August 26 01:37:35 KST 2014, jhlee
+#          * make the output script (setEpicsEnv) works...
+#          * change current_epics_base and current_epics_extensions as global 
+#            variable
 
 
 #
@@ -57,15 +60,46 @@ wget_options="wget -c"
 # xzf  : quiet
 # xzfv : verbose
 tar_command="tar xzf"
+#nproc_command="nproc -all"
 
-
+this_script_version="0.1.1"
 this_script_name=`basename $0`
 LOGDATE=`date +%Y.%m.%d.%H:%M`
-epics_download_site="http://www.aps.anl.gov/epics/download/"
 host_name=${HOSTNAME}
 user_name=${USERNAME}
-output_filename="setEpicsEnv"
 
+epics_download_site="http://www.aps.anl.gov/epics/download/"
+output_filename="setEpicsEnv"
+current_epics_base=""
+current_epics_extensions=""
+default_version="3.14.12.4"
+
+
+
+print_env()
+{
+    echo -e "#!/bin/bash" 
+    echo -e "# Shell  : ${output_filename}.sh"  
+    echo -e "# Author : Jeong Han Lee"    
+    echo -e "# email  : jhlee@ibs.re.kr"  
+    echo -e "# Generated at  $LOGDATE"    
+    echo -e "#           on  $host_name"  
+    echo -e "#           by  $user_name" 
+    echo -e "# version : ${this_script_version}"  
+    echo -e "" 
+    echo -e "#   * This script is genenated by $this_script_name automatically." 
+    echo -e "#     In order to setup EPICS base and its extentions correctly," 
+    echo -e "#     please run the following command:"
+    echo -e "#     . ${EPICS}/setEpicsEnv.sh "
+    echo -e "" 
+    echo -e "" 
+    echo -e "export EPICS_HOST_ARCH=${EPICS_HOST_ARCH}" 
+    echo -e "export EPICS_BASE=${current_epics_base}" 
+    echo -e "export EPICS_EXTENSIONS=${current_epics_extensions}" 
+    echo -e "export PATH=${PATH}" 
+    echo -e "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" 
+    echo -e "" 
+}
 
 
 make_ext()
@@ -83,26 +117,25 @@ make_ext()
 make_setEpicsEnv()
 {
     output=$1
-    echo "#!/bin/bash"  >>$output
-    echo "# Shell  : ${output_filename}.sh"  >>$output
-    echo "# Author : Jeong Han Lee"    >>$output
-    echo "# email  : jhlee@ibs.re.kr"  >>$output
-    echo "# Generated at  $LOGDATE"    >>$output
-    echo "#           on  $host_name"  >>$output
-    echo "#           by  $user_name" >> $output
-    echo "# version : 0.1.0"  >>$output
-    echo "#   * This script is genenated by $this_script_name." >>$output
-    echo "#     In order to setup EPICS base and its extentions correctly," >>$output
-    echo "#     please run the following command:">>$output
-    echo "#     . ${EPICS}/setEpicsEnv.sh " >> $output
-    echo "" >>$output
-    echo "" >>$output
-    echo "export EPICS_HOST_ARCH=${EPICS_HOST_ARCH}" >>$output
-    echo "export EPICS_BASE=${current_epics_base}" >>$output
-    echo "export EPICS_EXTENSIONS=${current_epics_extenstions}" >>$output
-    echo "export PATH=${PATH}" >>$output
-    echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >>$output
     
+    print_env >> $output
+
+#
+# Somehow, I want to put "printer" for EPICS enviroment
+# in the output script. So far there is no solution where
+# "variable" and "variable name" exist in a script
+#
+# Tuesday, August 26 01:24:15 KST 2014, jhlee
+#  
+#
+#     cat > $output <<End-of-message
+# echo EPICS_HOST_ARCH  : "${EPICS_HOST_ARCH}"
+# echo EPICS_BASE       : "${EPICS_BASE}"
+# echo EPICS_EXTENSIONS : "${EPICS_EXTENSIONS}"
+# echo PATH             : "${PATH}"
+# echo LD_LIBRARY_PATH  : "${LD_LIBRARY_PATH}"
+# End-of-message
+
     chmod +x $output
 
     echo ""
@@ -162,7 +195,6 @@ print_export()
 # bash scripts_for_epics/epics_default_installation.sh  R3.14.12.2
 #
 
-default_version="3.14.12.4"
 base_version=$1
 
 if [ -z "${base_version}" ]; then
@@ -227,10 +259,8 @@ export EPICS_HOST_ARCH
 current_epics_base=${EPICS}/base
 
 cd ${current_epics_base}
-#make clean uninstall
+make clean uninstall
 make  -j 
-
-print_export "Before EPICS settings"
 
 
 if [ -n "${EPICS_BASE}" ] ; then
@@ -368,15 +398,14 @@ else
 fi
 
 
-
-print_export "After EPICS setting"
-
 cd ${HOME}
 
 outputfile="${EPICS}/${output_filename}.sh"
 
 #echo $outputfile
 if [ -f $outputfile ]; then
+    echo ""
+    echo ""
     echo "EPICS env shell script [$outputfile] already exists"
     echo "Want to overwrite? ( Y/N ) : \c"
     read answer
@@ -398,8 +427,9 @@ if [ -f $outputfile ]; then
 	echo " ---------------------snip snip------------------------"
 	exit
     fi
+    echo "The existent file is renamed with ${outputfile}_bak_${LOGDATE}"
+    mv ${outputfile} ${outputfile}_bak_${LOGDATE}
 
-    mv ${outputfile} ${outputfile}_bak
     make_setEpicsEnv $outputfile
 
 else
