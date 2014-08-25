@@ -165,8 +165,8 @@ $tar_command ${base_filename}
 case `uname -sm` in
     "Linux i386" | "Linux i486" | "Linux i586" | "Linux i686")
         EPICS_HOST_ARCH=linux-x86
-# not test
-	EXTN_LIB_ARCH=x86-linux-gnu
+
+	EXTN_LIB_ARCH=i386-linux-gnu
         ;;
     "Linux x86_64")
         EPICS_HOST_ARCH=linux-x86_64
