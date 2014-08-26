@@ -3,7 +3,7 @@
 # Author : Jeong Han Lee
 # email  : jhlee@ibs.re.kr
 # Date   : Monday, August 25 21:01:19 KST 2014
-# version : 0.1.1
+# version : 0.1.2
 #
 #   * I intend to develop this script in order to reduce the painful
 #     copy and paste from EPICS and its extensions installation logs
@@ -22,15 +22,18 @@
 #
 #   * EPICS Base and extensionTop
 #   * Extensions List
-#     - StripTool2_5_15_0 
-#     - alh1_2_31 
-#     - medm3_1_8_1 
-#     - probe1_1_7_1 
+#     - StripTool2_5_16_0 
+#     - alh1_2_34 
+#     - medm3_1_9 
+#     - probe1_1_8_0 
 #     - msi1-6 
 #     - cau_20130110 
 #     - dbVerbose_20130124 
 #     - gnuregex0_13 
 #     - nameserver2_0_0_12
+#     - gateway2_0_4_0
+#
+#
 #
 #  - 0.0.1  Tue, December 31 16:20:15 KST 2013, jhlee
 #           * created
@@ -51,8 +54,12 @@
 #          * make the output script (setEpicsEnv) works...
 #          * change current_epics_base and current_epics_extensions as global 
 #            variable
-
-
+#  
+#  - 0.1.2 Tuesday, August 26 13:24:00 KST 2014, jhlee
+#          * add the VisualDCT in EPICS_EXTENSIONS
+#          * add the gateway into EPICS_EXTENSIONS
+#          * introduce make_command in order to minimize any compiling errors
+#            on R.Pi and increase the compiling speed on typical Linux hosts
 #
 # cq   : quiet 
 # c    : verbose
@@ -62,7 +69,7 @@ wget_options="wget -c"
 tar_command="tar xzf"
 #nproc_command="nproc -all"
 
-this_script_version="0.1.1"
+this_script_version="0.1.2"
 this_script_name=`basename $0`
 LOGDATE=`date +%Y.%m.%d.%H:%M`
 host_name=${HOSTNAME}
@@ -73,8 +80,9 @@ output_filename="setEpicsEnv"
 current_epics_base=""
 current_epics_extensions=""
 default_version="3.14.12.4"
-
-
+make_command_base=""
+make_command_extn=""
+vdct_status=""
 
 print_env()
 {
@@ -110,9 +118,51 @@ make_ext()
     $wget_options ${epics_download_site}/extensions/${extn_filename} 
     $tar_command ${extn_filename} -C ${current_epics_extensions}/src
     cd ${current_epics_extensions}/src/${extn_name}
-    make  
+    make clean
+    ${make_command_extn}
 
 }   
+
+
+# make_vdct doens't have any real make, so
+# it must be done after an installation of an extensions
+# Tuesday, August 26 11:04:27 KST 2014, jhlee
+#
+make_vdct()
+{
+    vdct_target=${current_epics_extensions}/src/VisualDCT
+    mkdir -p ${vdct_target}
+
+    vdct_version="2.6.1274"
+    vdct_filename=VisualDCT-dist-${vdct_version}.zip
+    cd ${EPICS}/downloads
+    $wget_options http://visualdct.cosylab.com/builds/VisualDCT/${vdct_version}/${vdct_filename}
+
+    #
+    # Force (-o option) to overwrite when the target files are in the target directory,
+    # so it will prevent the duplicated entries in the below sed procedure.
+    #
+    unzip -oq -d ${vdct_target} ${vdct_filename}
+
+    vdct_home=${vdct_target}/${vdct_version}
+    run_script=${vdct_home}/runScript
+    vdct_bin=${current_epics_extensions}/bin/${EPICS_HOST_ARCH}/vdct
+
+    vdct_jar_name=VisualDCT.jar
+    #
+    # fix the path for VisualDCT.jar location in runScript
+    # in order to run it globally.
+    #
+    sed -i "s|${vdct_jar_name}|${vdct_home}/${vdct_jar_name}|g" ${run_script}
+    #
+    # add the execute permission for runScript
+    #
+    chmod +x ${run_script}
+    #
+    # force to make a symbolic link for vdct in EPICS_EXTENSIONS/bin
+    #
+    ln -sf ${run_script} ${vdct_bin}
+}
 
 make_setEpicsEnv()
 {
@@ -213,7 +263,7 @@ EPICS=${target_dir}/epics/R${base_version}
 # Move the target directory ${HOME}
 cd ${target_dir}
 
-mkdir -p ${EPICS}/{siteLibs,siteApps,downloads}
+mkdir -p ${EPICS}/downloads
 
 cd ${EPICS}/downloads
 
@@ -236,14 +286,28 @@ case `uname -sm` in
     "Linux i386" | "Linux i486" | "Linux i586" | "Linux i686")
         EPICS_HOST_ARCH=linux-x86
 	EXTN_LIB_ARCH=i386-linux-gnu
+	make_command_base="make -j"
+	make_command_extn="make"
+	vdct_status=1
         ;;
     "Linux x86_64")
         EPICS_HOST_ARCH=linux-x86_64
 	EXTN_LIB_ARCH=x86_64-linux-gnu
+	make_command_base="make -j"
+	make_command_extn="make"
+	vdct_status=1
         ;;
     "Linux armv6l")
 	EPICS_HOST_ARCH=linux-arm
 	EXTN_LIB_ARCH=arm-linux-gnueabihf
+	# 
+	# There are missing header files when make -j is used on 
+	# Raspberry Pi 
+	# Tuesday, August 26 14:44:43 KST 2014, jhlee
+	# 
+	make_command_base="make"
+	make_command_extn="make"
+	vdct_status=0
 	;;
     *)
         echo "This script  doesn't support this architecture : `uname -sm`"
@@ -260,7 +324,7 @@ current_epics_base=${EPICS}/base
 
 cd ${current_epics_base}
 make clean uninstall
-make  -j 
+${make_command_base}
 
 
 if [ -n "${EPICS_BASE}" ] ; then
@@ -358,13 +422,26 @@ echo "XRTGRAPH =" >>$extn_conf_os
 
 
 #EXTN_LIST="StripTool2_5_16_0"
-EXTN_LIST="StripTool2_5_16_0 alh1_2_34 medm3_1_9 probe1_1_8_0 msi1-6 cau_20130110 dbVerbose_20130124 gnuregex0_13 nameserver2_0_0_12"
-
+EXTN_LIST="StripTool2_5_16_0 alh1_2_34 medm3_1_9 probe1_1_8_0 msi1-6 cau_20130110 dbVerbose_20130124 gnuregex0_13 nameserver2_0_0_12 gateway2_0_4_0"
 
 for d in $EXTN_LIST
 do
     make_ext $d
 done
+
+
+
+#
+# the following function must be after make_ext,
+# because the function will use the installation directory structure
+# which is made by one of any extensions packages.
+# 
+
+
+if [ $vdct_status ]
+then
+    make_vdct
+fi
 
 
 if [ -n "${EPICS_EXTENSIONS}" ] ; then
