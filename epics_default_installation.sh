@@ -61,6 +61,12 @@
 #          * introduce make_command in order to minimize any compiling errors
 #            on R.Pi and increase the compiling speed on typical Linux hosts
 #
+#  - 0.1.3 Tuesday, August 26 17:22:46 KST 2014, jhlee
+#          * introduce EPICS_PATH to use it in siteLibs and siteApps
+#          * replace ${EPICS} to ${current_epics_path}, which
+#            will be EPICS_PATH
+#
+#
 # cq   : quiet 
 # c    : verbose
 wget_options="wget -c"
@@ -69,7 +75,7 @@ wget_options="wget -c"
 tar_command="tar xzf"
 #nproc_command="nproc -all"
 
-this_script_version="0.1.2"
+this_script_version="0.1.3"
 this_script_name=`basename $0`
 LOGDATE=`date +%Y.%m.%d.%H:%M`
 host_name=${HOSTNAME}
@@ -79,6 +85,7 @@ epics_download_site="http://www.aps.anl.gov/epics/download/"
 output_filename="setEpicsEnv"
 current_epics_base=""
 current_epics_extensions=""
+current_epics_path=""
 default_version="3.14.12.4"
 make_command_base=""
 make_command_extn=""
@@ -94,14 +101,15 @@ print_env()
     echo -e "#           on  $host_name"  
     echo -e "#           by  $user_name" 
     echo -e "# version : ${this_script_version}"  
-    echo -e "" 
+    echo -e "#" 
     echo -e "#   * This script is genenated by $this_script_name automatically." 
     echo -e "#     In order to setup EPICS base and its extentions correctly," 
     echo -e "#     please run the following command:"
-    echo -e "#     . ${EPICS}/setEpicsEnv.sh "
+    echo -e "#     . ${current_epics_path}/setEpicsEnv.sh "
     echo -e "" 
     echo -e "" 
     echo -e "export EPICS_HOST_ARCH=${EPICS_HOST_ARCH}" 
+    echo -e "export EPICS_PATH=${current_epics_path}"
     echo -e "export EPICS_BASE=${current_epics_base}" 
     echo -e "export EPICS_EXTENSIONS=${current_epics_extensions}" 
     echo -e "export PATH=${PATH}" 
@@ -114,7 +122,7 @@ make_ext()
 {
     extn_name=$1
     extn_filename=${extn_name}.tar.gz 
-    cd ${EPICS}/downloads
+    cd ${current_epics_path}/downloads
     $wget_options ${epics_download_site}/extensions/${extn_filename} 
     $tar_command ${extn_filename} -C ${current_epics_extensions}/src
     cd ${current_epics_extensions}/src/${extn_name}
@@ -135,7 +143,7 @@ make_vdct()
 
     vdct_version="2.6.1274"
     vdct_filename=VisualDCT-dist-${vdct_version}.zip
-    cd ${EPICS}/downloads
+    cd ${current_epics_path}/downloads
     $wget_options http://visualdct.cosylab.com/builds/VisualDCT/${vdct_version}/${vdct_filename}
 
     #
@@ -231,6 +239,7 @@ print_export()
 
     echo ""
     echo " >> ${explain} "
+    echo " >> EPICS_PATH       : " $EPICS_PATH
     echo " >> EPICS_BASE       : " $EPICS_BASE
     echo " >> EPICS_EXTENSIONS : " $EPICS_EXTENSIONS
     echo " >> PATH             : " $PATH
@@ -258,20 +267,20 @@ base_filename="baseR${base_version}.tar.gz"
 
 target_dir=${HOME}
 
-EPICS=${target_dir}/epics/R${base_version}
+current_epics_path=${target_dir}/epics/R${base_version}
 
 # Move the target directory ${HOME}
 cd ${target_dir}
 
-mkdir -p ${EPICS}/downloads
+mkdir -p ${current_epics_path}/downloads
 
-cd ${EPICS}/downloads
+cd ${current_epics_path}/downloads
 
 echo "${epics_download_site}/base/${base_filename}"
 
 $wget_options ${epics_download_site}/base/${base_filename} 
 
-$tar_command ${base_filename}  --transform 's/base-'${base_version}'/base/' -C ${EPICS}
+$tar_command ${base_filename}  --transform 's/base-'${base_version}'/base/' -C ${current_epics_path}
 
 
 # copy the following code from vlinac shell scripts
@@ -320,7 +329,7 @@ esac
 # #
 export EPICS_HOST_ARCH
 
-current_epics_base=${EPICS}/base
+current_epics_base=${current_epics_path}/base
 
 cd ${current_epics_base}
 make clean uninstall
@@ -362,12 +371,12 @@ fi
 extn_version="20120904"
 extn_filename="extensionsTop_${extn_version}.tar.gz"
 
-cd ${EPICS}/downloads
+cd ${current_epics_path}/downloads
 $wget_options ${epics_download_site}/extensions/${extn_filename}
-$tar_command ${extn_filename} -C ${EPICS}
+$tar_command ${extn_filename} -C ${current_epics_path}
 
-current_epics_extensions=${EPICS}/extensions
-export current_epics_extension
+current_epics_extensions=${current_epics_path}/extensions
+export current_epics_extensions
 
 
 ##CONFIG_SITE.linux-x86_64.linux-x86_64 file in extensions/configure/os 
@@ -437,7 +446,7 @@ done
 # which is made by one of any extensions packages.
 # 
 
-
+# skip vdct on linux-arm
 if [ $vdct_status ]
 then
     make_vdct
@@ -477,7 +486,7 @@ fi
 
 cd ${HOME}
 
-outputfile="${EPICS}/${output_filename}.sh"
+outputfile="${current_epics_path}/${output_filename}.sh"
 
 #echo $outputfile
 if [ -f $outputfile ]; then
@@ -496,6 +505,7 @@ if [ -f $outputfile ]; then
 	echo " ---------------------snip snip------------------------"
 	echo ""
 	echo "export EPICS_HOST_ARCH=${EPICS_HOST_ARCH}"
+	echo "export EPICS_PATH=${current_epics_path}"
 	echo "export EPICS_BASE=${current_epics_base}"
 	echo "export EPICS_EXTENSIONS=${current_epics_extensions}"
 	echo "export PATH=${PATH}" 
