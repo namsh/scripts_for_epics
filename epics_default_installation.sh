@@ -2,8 +2,8 @@
 # Shell  : epics_default_installation.sh
 # Author : Jeong Han Lee
 # email  : jhlee@ibs.re.kr
-# Date   : Monday, August 25 21:01:19 KST 2014
-# version : 0.1.2
+# Date   : Wednesday, August 27 19:26:32 KST 2014
+# version : 0.1.3
 #
 #   * I intend to develop this script in order to reduce the painful
 #     copy and paste from EPICS and its extensions installation logs
@@ -66,7 +66,20 @@
 #          * replace ${EPICS} to ${current_epics_path}, which
 #            will be EPICS_PATH
 #
+#  - 0.1.4 Wednesday, August 27 19:07:46 KST 2014, jhlee
+#          * introduce clear_add_env in order to re-use code
+#            Four entries ($EPICS_BASE, $EPICS_EXTENSIONS,
+#            $RAON_SITELIBS, $RAON_SITEAPPS) should be reset
+#            in $PATH, $LD_LIBRARY_PATH
+#          * Remove a routine to touch RELEASE in extensions,
+#            because we don't need it anymore
+#          * clear some codes for better structuring...  
 #
+#
+#
+#
+#
+
 # cq   : quiet 
 # c    : verbose
 wget_options="wget -c"
@@ -75,7 +88,7 @@ wget_options="wget -c"
 tar_command="tar xzf"
 #nproc_command="nproc -all"
 
-this_script_version="0.1.3"
+this_script_version="0.1.4"
 this_script_name=`basename $0`
 LOGDATE=`date +%Y.%m.%d.%H:%M`
 host_name=${HOSTNAME}
@@ -86,6 +99,9 @@ output_filename="setEpicsEnv"
 current_epics_base=""
 current_epics_extensions=""
 current_epics_path=""
+current_raon_sitelibs=""
+current_raon_siteapps=""
+
 default_version="3.14.12.4"
 make_command_base=""
 make_command_extn=""
@@ -103,15 +119,19 @@ print_env()
     echo -e "# version : ${this_script_version}"  
     echo -e "#" 
     echo -e "#   * This script is genenated by $this_script_name automatically." 
-    echo -e "#     In order to setup EPICS base and its extentions correctly," 
-    echo -e "#     please run the following command:"
-    echo -e "#     . ${current_epics_path}/setEpicsEnv.sh "
+    echo -e "#     In order to setup EPICS_PATH, EPICS_BASE, EPICS_EXTENSIONS, "
+    echo -e "#     RAON_SITEAPPS, RAON_SITELIBS, PATH, and LD_LIBRARY_PATH correctly, "
+    echo -e "#     please run the following command in your $host_name:"
+    echo -e "#"
+    echo -e "#     . ${current_epics_path}/${output_filename}.sh "
     echo -e "" 
     echo -e "" 
     echo -e "export EPICS_HOST_ARCH=${EPICS_HOST_ARCH}" 
     echo -e "export EPICS_PATH=${current_epics_path}"
     echo -e "export EPICS_BASE=${current_epics_base}" 
     echo -e "export EPICS_EXTENSIONS=${current_epics_extensions}" 
+    echo -e "export RAON_SITELIBS=${current_raon_sitelibs}"
+    echo -e "export RAON_SITEAPPS=${current_raon_siteapps}"
     echo -e "export PATH=${PATH}" 
     echo -e "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" 
     echo -e "" 
@@ -122,7 +142,7 @@ make_ext()
 {
     extn_name=$1
     extn_filename=${extn_name}.tar.gz 
-    cd ${current_epics_path}/downloads
+    cd ${epics_downloads}
     $wget_options ${epics_download_site}/extensions/${extn_filename} 
     $tar_command ${extn_filename} -C ${current_epics_extensions}/src
     cd ${current_epics_extensions}/src/${extn_name}
@@ -143,7 +163,7 @@ make_vdct()
 
     vdct_version="2.6.1274"
     vdct_filename=VisualDCT-dist-${vdct_version}.zip
-    cd ${current_epics_path}/downloads
+    cd ${epics_downloads}
     $wget_options http://visualdct.cosylab.com/builds/VisualDCT/${vdct_version}/${vdct_filename}
 
     #
@@ -226,6 +246,57 @@ drop_from_path()
                           -e "s;${drop};;g"`
 }
 
+clear_add_env()
+{
+    
+   # Assert that we got enough arguments
+   if test $# -ne 2 ; then
+       echo "clear_add_env: needs 2 arguments"
+       echo $1
+       echo $2
+       
+       return 1
+   fi
+
+    current_epics_env=$1
+    # $current_epics_base, $current_epics_extensions, $current_raon_sitelibs, $current_raon_siteapps, $current_epics_path(?)
+    
+    check_epics_env=$2
+
+    # $EPICS_BASE, $EPICS_EXTENSIONS, $RAON_SITELIBS, $RAON_SITEAPPS, $EPICS_PATH (?)
+
+    if [ -n "${check_epics_env}" ] ; then
+	old_epics_env=${check_epics_env}
+    fi
+
+
+    if [ -n "${old_epics_env}" ] ; then
+	if [ -n "${PATH}" ]; then
+	    drop_from_path $PATH ${old_epics_env}/bin/${EPICS_HOST_ARCH}
+	    PATH=$newpath
+	fi
+	if [ -n "${LD_LIBRARY_PATH}" ]; then
+	    drop_from_path $LD_LIBRARY_PATH ${old_epics_env}/lib/${EPICS_HOST_ARCH}
+	    LD_LIBRARY_PATH=$newpath
+	fi
+    fi
+
+
+    if [ -z "${PATH}" ]; then
+	PATH=${current_epics_env}/bin/${EPICS_HOST_ARCH}; 
+    else
+	PATH=${current_epics_env}/bin/${EPICS_HOST_ARCH}:$PATH; 
+    fi
+
+
+    if [ -z "${LD_LIBRARY_PATH}" ]; then
+	LD_LIBRARY_PATH=${current_epics_env}/lib/${EPICS_HOST_ARCH}; 
+    else
+	LD_LIBRARY_PATH=${current_epics_env}/lib/${EPICS_HOST_ARCH}:$LD_LIBRARY_PATH;
+    fi
+}
+
+
 
 print_export()
 {
@@ -262,26 +333,24 @@ fi
 
 base_filename="baseR${base_version}.tar.gz"
 
-# echo $base_version
-# echo $base_filename
 
-target_dir=${HOME}
+epics=${HOME}/epics
 
-current_epics_path=${target_dir}/epics/R${base_version}
+mkdir -p ${epics}/{downloads,R${base_version}}
+
+epics_downloads=${epics}/downloads
+
+current_epics_path=${epics}/R${base_version}
+current_epics_base=${current_epics_path}/base
+current_epics_extensions=${current_epics_path}/extensions
+current_raon_sitelibs=${current_epics_path}/siteLibs
+current_raon_siteapps=${current_epics_path}/siteApps
 
 # Move the target directory ${HOME}
-cd ${target_dir}
 
-mkdir -p ${current_epics_path}/downloads
-
-cd ${current_epics_path}/downloads
-
-echo "${epics_download_site}/base/${base_filename}"
-
+cd ${epics_downloads}
 $wget_options ${epics_download_site}/base/${base_filename} 
-
 $tar_command ${base_filename}  --transform 's/base-'${base_version}'/base/' -C ${current_epics_path}
-
 
 # copy the following code from vlinac shell scripts
 # 
@@ -329,75 +398,38 @@ esac
 # #
 export EPICS_HOST_ARCH
 
-current_epics_base=${current_epics_path}/base
-
 cd ${current_epics_base}
 make clean uninstall
 ${make_command_base}
 
 
-if [ -n "${EPICS_BASE}" ] ; then
-    old_epics_base=${EPICS_BASE}
-fi
-
-
-if [ -n "${old_epics_base}" ] ; then
-    if [ -n "${PATH}" ]; then
-	drop_from_path $PATH ${old_epics_base}/bin/${EPICS_HOST_ARCH}
-	PATH=$newpath
-    fi
-    if [ -n "${LD_LIBRARY_PATH}" ]; then
-	drop_from_path $LD_LIBRARY_PATH ${old_epics_base}/lib/${EPICS_HOST_ARCH}
-	LD_LIBRARY_PATH=$newpath
-    fi
- fi
-
-
-if [ -z "${PATH}" ]; then
-    PATH=${current_epics_base}/bin/${EPICS_HOST_ARCH}; 
-else
-    PATH=${current_epics_base}/bin/${EPICS_HOST_ARCH}:$PATH; 
-fi
-
-
-if [ -z "${LD_LIBRARY_PATH}" ]; then
-    LD_LIBRARY_PATH=${current_epics_base}/lib/${EPICS_HOST_ARCH}; 
-else
-    LD_LIBRARY_PATH=${current_epics_base}/lib/${EPICS_HOST_ARCH}:$LD_LIBRARY_PATH;
-fi
-
-
-
 extn_version="20120904"
 extn_filename="extensionsTop_${extn_version}.tar.gz"
 
-cd ${current_epics_path}/downloads
+cd ${epics_downloads}
 $wget_options ${epics_download_site}/extensions/${extn_filename}
 $tar_command ${extn_filename} -C ${current_epics_path}
 
-current_epics_extensions=${current_epics_path}/extensions
-export current_epics_extensions
 
 
-##CONFIG_SITE.linux-x86_64.linux-x86_64 file in extensions/configure/os 
-## modify 
-
-##
+## Don't need to touch RELEASE file, because the default path
+## is the same as what we are using currently.
+## Wednesday, August 27 19:22:14 KST 2014, jhlee
+## 
 ## create  "${EPICS_EXTENSIONS}/configure/RELEASE"
 ## if the file exists, remove it to name_old, then create one for
 ## EPICS_BASE and EPICS_EXTENSIONS
-## 
 
-extn_release="${current_epics_extensions}/configure/RELEASE"
+# extn_release="${current_epics_extensions}/configure/RELEASE"
 
-if [ -f $extn_release ]; then
-    mv ${extn_release} ${extn_release}_original
-#     sed -e 's/..\/base/..\/'${base_raw_dirname}'/g'  ${extn_release}_old > ${extn_release}
-fi
+# if [ -f $extn_release ]; then
+#     mv ${extn_release} ${extn_release}_original
+# #     sed -e 's/..\/base/..\/'${base_raw_dirname}'/g'  ${extn_release}_old > ${extn_release}
+# fi
 
-touch ${extn_release}
-echo -e 'EPICS_BASE=$(TOP)/../base' >> $extn_release
-echo -e 'EPICS_EXTENSIONS=$(TOP)' >> $extn_release
+# touch ${extn_release}
+# echo -e 'EPICS_BASE=$(TOP)/../base' >> $extn_release
+# echo -e 'EPICS_EXTENSIONS=$(TOP)' >> $extn_release
 
 
 
@@ -452,39 +484,14 @@ then
     make_vdct
 fi
 
+#
+# Reverse order for bettering ordering in $output_filename.sh
+#
 
-if [ -n "${EPICS_EXTENSIONS}" ] ; then
-    old_epics_extn=${EPICS_EXTENSIONS}
-fi
-
-
-if [ -n "${old_epics_extn}" ] ; then
-    if [ -n "${PATH}" ]; then
-	drop_from_path $PATH ${old_epics_extn}/bin/${EPICS_HOST_ARCH}
-	PATH=$newpath
-    fi
-    if [ -n "${LD_LIBRARY_PATH}" ]; then
-	drop_from_path $LD_LIBRARY_PATH ${old_epics_extn}/lib/${EPICS_HOST_ARCH}
-	LD_LIBRARY_PATH=$newpath
-    fi
- fi
-
-
-if [ -z "${PATH}" ]; then
-    PATH=${current_epics_extensions}/bin/${EPICS_HOST_ARCH}; 
-else
-    PATH=${current_epics_extensions}/bin/${EPICS_HOST_ARCH}:$PATH; 
-fi
-
-
-if [ -z "${LD_LIBRARY_PATH}" ]; then
-    LD_LIBRARY_PATH=${current_epics_extensions}/lib/${EPICS_HOST_ARCH}; 
-else
-    LD_LIBRARY_PATH=${current_epics_extensions}/lib/${EPICS_HOST_ARCH}:$LD_LIBRARY_PATH;
-fi
-
-
-cd ${HOME}
+clear_add_env "${current_raon_siteapps}" "${RAON_SITEAPPS}"
+clear_add_env "${current_raon_sitelibs}" "${RAON_SITELIBS}"
+clear_add_env "${current_epics_extensions}" "${EPICS_EXTENSIONS}"
+clear_add_env "${current_epics_base}" "${EPICS_BASE}"
 
 outputfile="${current_epics_path}/${output_filename}.sh"
 
@@ -504,10 +511,12 @@ if [ -f $outputfile ]; then
 	echo "please re-run this scipt to overwrite the old script. "
 	echo " ---------------------snip snip------------------------"
 	echo ""
-	echo "export EPICS_HOST_ARCH=${EPICS_HOST_ARCH}"
+	echo "export EPICS_HOST_ARCH=${EPICS_HOST_ARCH}" 
 	echo "export EPICS_PATH=${current_epics_path}"
-	echo "export EPICS_BASE=${current_epics_base}"
-	echo "export EPICS_EXTENSIONS=${current_epics_extensions}"
+	echo "export EPICS_BASE=${current_epics_base}" 
+	echo "export EPICS_EXTENSIONS=${current_epics_extensions}" 
+	echo "export RAON_SITELIBS=${current_raon_sitelibs}"
+	echo "export RAON_SITEAPPS=${current_raon_siteapps}"
 	echo "export PATH=${PATH}" 
 	echo "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 	echo ""
