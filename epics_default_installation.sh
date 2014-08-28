@@ -3,7 +3,7 @@
 # Author : Jeong Han Lee
 # email  : jhlee@ibs.re.kr
 # Date   : Wednesday, August 27 19:26:32 KST 2014
-# version : 0.1.4
+# version : 0.1.5
 #
 #   * I intend to develop this script in order to reduce the painful
 #     copy and paste from EPICS and its extensions installation logs
@@ -75,9 +75,9 @@
 #            because we don't need it anymore
 #          * clear some codes for better structuring...  
 #
-#
-#
-#
+#  - 0.1.5 Thursday, August 28 15:45:16 KST 2014, jhlee
+#          * remove the condition for vdct
+#            , because we can run vdct on R.Pi. 
 #
 
 # cq   : quiet 
@@ -366,14 +366,14 @@ case `uname -sm` in
 	EXTN_LIB_ARCH=i386-linux-gnu
 	make_command_base="make -j"
 	make_command_extn="make"
-	vdct_status=1
+#	vdct_status=1
         ;;
     "Linux x86_64")
         EPICS_HOST_ARCH=linux-x86_64
 	EXTN_LIB_ARCH=x86_64-linux-gnu
 	make_command_base="make -j"
 	make_command_extn="make"
-	vdct_status=1
+#	vdct_status=1
         ;;
     "Linux armv6l")
 	EPICS_HOST_ARCH=linux-arm
@@ -385,7 +385,7 @@ case `uname -sm` in
 	# 
 	make_command_base="make"
 	make_command_extn="make"
-	vdct_status=0
+#	vdct_status=0
 	;;
     *)
         echo "This script  doesn't support this architecture : `uname -sm`"
@@ -477,12 +477,10 @@ done
 # because the function will use the installation directory structure
 # which is made by one of any extensions packages.
 # 
+# Slow, but we can run vdct on R.Pi also... 
 
-# skip vdct on linux-arm
-if [ $vdct_status ]
-then
-    make_vdct
-fi
+make_vdct
+
 
 #
 # Reverse order for bettering ordering in $output_filename.sh
