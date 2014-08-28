@@ -3,7 +3,7 @@
 # Author : Jeong Han Lee
 # email  : jhlee@ibs.re.kr
 # Date   : Wednesday, August 27 19:26:32 KST 2014
-# version : 0.1.3
+# version : 0.1.4
 #
 #   * I intend to develop this script in order to reduce the painful
 #     copy and paste from EPICS and its extensions installation logs
