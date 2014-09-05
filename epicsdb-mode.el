@@ -69,7 +69,7 @@
 	"mbbi"
 	"mbbiDirect"
 	"mbbo"
-	"mbbodirect"
+	"mbboDirect"
 	"permissive"
 	"sel"
 	"seq"
@@ -585,11 +585,75 @@
 	"MPST"
 	"APST"
 	"NELM"
+	"OSV"
+	"WDPT"
+	"RPVT"
 	)
       )
 
-;; (setq epicsdb-events '("at_rot_target" "at_target" "attach"))
-;; (setq epicsdb-functions '("test"))
+;;(setq epicsdb-events '("at_rot_target" "at_target" "attach"))
+(setq epicsdb-variable
+;;(setq epicsdb-functions 
+      '(
+	"PP"
+	"NPP"
+	"MS"
+	"NMS"
+	"CP"
+	"CPP"
+	"CA"
+	"NO_ALARM"
+	"MINOR"
+	"MAJOR"
+	"INVALID"
+	"DBF_STRING"
+	"DBF_INT"
+	"DBF_SHORT"
+	"DBF_FLOAT"
+	"DBF_ENUM"
+	"DBF_CHAR"
+	"DBF_LONG"
+	"DBF_DOUBLE"
+	"DBF_NO_ACCESS"
+	"DBF_UCHAR"
+	"DBF_USHORT"
+	"DBF_ULONG"
+	"DBF_MENU"
+	"DBF_INLINK"
+	"DBF_DEVICE"
+	"DBF_NOACCESS"
+	"DBF_FWDLINK"
+	"DBF_OUTLINK"
+
+	;; Hardware Link Types
+	"VME_IO"
+	"INST_IO"
+	"CAMAC_IO"
+	"AB_IO"
+	"GPIB_IO"
+	"BITBUS_IO"
+	"BBGPIB_IO"
+	"RF_IO"
+	"VXI_IO"
+	"CONSTANT"
+	)
+      )
+
+
+(setq epicsdb-function 
+      '(
+	"prompt"
+	"promptgroup"
+	"special"
+	"size"
+	"interest"
+	"pp"
+	"initial"
+	"extra"
+	"asl"
+	
+	)
+      )
 
 ;; create the regex string for each class of keywords
 ;;(setq epicsdb-comments-regexp  (regexp-opt epicsdb-comments  'words))
@@ -597,9 +661,8 @@
 (setq epicsdb-keywords-regexp  (regexp-opt epicsdb-keywords  'words))
 (setq epicsdb-type-regexp      (regexp-opt epicsdb-types     'words))
 (setq epicsdb-constants-regexp (regexp-opt epicsdb-constants 'words))
-
-;; (setq epicsdb-event-regexp     (regexp-opt epicsdb-events    'words))
-;; (setq epicsdb-functions-regexp (regexp-opt epicsdb-functions 'words))
+(setq epicsdb-variable-regexp    (regexp-opt epicsdb-variable    'words))
+(setq epicsdb-function-regexp  (regexp-opt epicsdb-function  'words))
 
 
 ;; clear memory
@@ -607,16 +670,16 @@
 (setq epicsdb-keywords nil)
 (setq epicsdb-types nil)
 (setq epicsdb-constants nil)
-
-;;(setq epicsdb-events nil)
-;;(setq epicsdb-functions nil)
+(setq epicsdb-variable nil)
+(setq epicsdb-function nil)
 
 
 
 (defvar epicsdb-mode-syntax-table
   (let ((st (make-syntax-table)))
-    (modify-syntax-entry ?# "<" st)
-    (modify-syntax-entry ?\n ">" st)
+    ;; bash style comment: “# …” 
+    (modify-syntax-entry ?# "< b" st)
+    (modify-syntax-entry ?\n "> b" st)
     st)
   "Syntax table for `epicsdb-mode'."
   )
@@ -642,15 +705,13 @@
 
 (setq epicsdb-font-lock-keywords
   `(
-    ;;    (,epicsdb-comments-regexp    . font-lock-type-comment-face)
-    (,epicsdb-type-regexp       . font-lock-type-face)
-    (,epicsdb-constants-regexp   . font-lock-constant-face)
-    ;;    (,epicsdb-event-regexp      . font-lock-builtin-face)
-    ;;    (,epicsdb-functions-regexp  . font-lock-function-name-face)
-    (,epicsdb-keywords-regexp   . font-lock-keyword-face)
-    ;; note: order above matters. “epicsdb-keywords-regexp” goes last because
-    ;; otherwise the keyword “state” in the function “state_entry”
-    ;; would be highlighted.
+    (,epicsdb-keywords-regexp  . font-lock-keyword-face)
+    (,epicsdb-type-regexp      . font-lock-type-face)
+    (,epicsdb-constants-regexp . font-lock-constant-face)
+    (,epicsdb-variable-regexp  . font-lock-variable-name-face)
+    (,epicsdb-function-regexp  . font-lock-function-name-face)
+   
+  
 ))
 
 ;;
@@ -665,18 +726,20 @@
 ;; define the mode
 (define-derived-mode epicsdb-mode c-mode
   "epicsdb mode"
-  "Major mode for editing Epics DB…"
+  "Major mode for editing EPICS DB, DBD, and VDB files …"
   :syntax-table epicsdb-mode-syntax-table
-  ;; cofe for syntax highlighting
   (setq font-lock-defaults '((epicsdb-font-lock-keywords)))
+
   (setq comment-start "#")
   (setq comment-start-skip "#+\\s-*")
+
   ;; clear memory
-  (setq epicsdb-keywords-regexp nil)
-  (setq epicsdb-types-regexp nil)
-  (setq epicsdb-constants-regexp nil)
-  (setq epicsdb-events-regexp nil)
-  (setq epicsdb-functions-regexp nil)
+  (setq epicsdb-keywords nil)
+  (setq epicsdb-types nil)
+  (setq epicsdb-constants nil)
+  (setq epicsdb-variable nil)
+  (setq epicsdb-function nil)
+
 )
 
 (provide 'epicsdb-mode)
