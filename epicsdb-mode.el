@@ -2,11 +2,17 @@
 ;; Author   : Jeong Han Lee
 ;; email    : jhlee@ibs.re.kr
 ;; Date     : Friday, September  5 13:17:02 KST 2014
-;; version  : 0.0.1
+;; version  : 0.0.2
 ;;
 ;; 0.0.1    : Friday, September  5 13:17:37 KST 2014
 ;;            created
-
+;; 0.0.2    : Wednesday, September 10 23:47:39 KST 2014
+;;            - based mode : sh mode, because of the default
+;;              indent.
+;;            - re-order keyword, type, and so on...
+;;            - add more constants...
+;;
+;;  
 
 ;; The references for writing this codes are 
 ;; 1) http://ergoemacs.org/emacs/elisp_syntax_coloring.html
@@ -21,29 +27,36 @@
 ;;    (load-file "$HOME/.emacs.d/epicsdb-mode.el")
 ;;    (require 'epicsdb-mode)
 
-
+;; keyward : purple
+;; type    : green
+;; comment : red
+;; event   : pink
+;; function : blue
+;; constant : blue green
+;;
 
 ;; define several class of keywords
-(setq epicsdb-keywords 
-      '(
-	"path"
-	"addpath"
-	"include"
-	"menu"
-	"choice"
-	"recordtype"
-	"field"
-	"device"
-	"driver"
-	"registrar"
-	"function"
-	"variable"
-	"breaktable"
-	"record"
-	"grecord"
-	"info"
-	"alias")
-      )
+ (setq epicsdb-keyword 
+       '(
+ 	"path"
+ 	"addpath"
+ 	"include"
+ 	"menu"
+;; 	"choice"
+ 	"recordtype"
+;; 	"field"
+ 	"device"
+;; 	"driver"
+ 	"registrar"
+;; 	"function"
+ 	"variable"
+;; 	"breaktable"
+ 	"record"
+;; 	"grecord"
+;; 	"info"
+ 	"alias"
+	)
+       )
 
 ;;
 ;; EPICS Record Type https://wiki-ext.aps.anl.gov/epics/index.php/RRM_3-14
@@ -85,7 +98,7 @@
 ;;
 ;; EPICS Field Commons https://wiki-ext.aps.anl.gov/epics/index.php/RRM_3-14_dbCommon
 ;;
-(setq epicsdb-constants 
+(setq epicsdb-constant 
       '(
 	;; SCAN Fields
 	"SCAN"
@@ -300,6 +313,19 @@
 	"T"
 	"U"
 ;;
+	"LA"
+	"LB"
+	"LC"
+	"LD"
+	"LE"
+	"LF"
+	"LG"
+	"LH"
+	"LI"
+	"LJ"
+	"LK"
+	"LL"
+;;
 	"FTA"
 	"FTB"
 	"FTC"
@@ -388,6 +414,28 @@
 	"OUTT"
 	"OUTU"
 ;;
+	"ONVA"
+	"ONVB"
+	"ONVC"
+	"ONVD"
+	"ONVE"
+	"ONVF"
+	"ONVG"
+	"ONVH"
+	"ONVI"
+	"ONVJ"
+	"ONVK"
+	"ONVL"
+	"ONVM"
+	"ONVN"
+	"ONVO"
+	"ONVP"
+	"ONVQ"
+	"ONVR"
+	"ONVS"
+	"ONVT"
+	"ONVU"
+;;
 	"VALA"
 	"VALB"
 	"VALC"
@@ -409,6 +457,50 @@
 	"VALS"
 	"VALT"
 	"VALU"
+;;
+	"FTVA"
+	"FTVB"
+	"FTVC"
+	"FTVD"
+	"FTVE"
+	"FTVF"
+	"FTVG"
+	"FTVH"
+	"FTVI"
+	"FTVJ"
+	"FTVK"
+	"FTVL"
+	"FTVM"
+	"FTVN"
+	"FTVO"
+	"FTVP"
+	"FTVQ"
+	"FTVR"
+	"FTVS"
+	"FTVT"
+	"FTVU"
+;;
+	"NOVA"
+	"NOVB"
+	"NOVC"
+	"NOVD"
+	"NOVE"
+	"NOVF"
+	"NOVG"
+	"NOVH"
+	"NOVI"
+	"NOVJ"
+	"NOVK"
+	"NOVL"
+	"NOVM"
+	"NOVN"
+	"NOVO"
+	"NOVP"
+	"NOVQ"
+	"NOVR"
+	"NOVS"
+	"NOVT"
+	"NOVU"
 ;;
 	"OVLA"
 	"OVLB"
@@ -490,7 +582,9 @@
 	"ELVL"
 	"TVVL"
 	"TTVL"
-	"FTVL"
+;;
+;;	"FTVL"
+
 	"FFVL"
 	"ZRST"
 	"ONST"
@@ -588,6 +682,16 @@
 	"OSV"
 	"WDPT"
 	"RPVT"
+	"HASH"
+	"NLST"
+	"ALG"
+	"NSAM"
+	"LSET"
+	"INDX"
+	"BUSY"
+	"NORD"
+	"BPTR"
+	"MALM"
 	)
       )
 
@@ -636,12 +740,42 @@
 	"RF_IO"
 	"VXI_IO"
 	"CONSTANT"
+
+	"TRUE"
+	"ASL0"
+	"GUI_ALARMS"
+	"GUI_DISPLAY"
+	"GUI_INPUTS"
+	"GUI_OUTPUT"
+	"GUI_SELECT"
+	"GUI_SUB"
+	"GUI_WAVE"
+	"GUI_CALC"
+	"GUI_MBB"
+	"GUI_BITS1"
+	"GUI_BITS2"
+	"GUI_COMMON"
+	"GUI_CLOCK"
+	"GUI_COMPRESS"
+	"GUI_CONVERT"
+	"GUI_SEQ1"
+	"GUI_SEQ2"
+	"GUI_SEQ3"
+	"GUI_SCAN"
+
+	"SPC_CALC"
+
+	"SPC_MOD"
+	"SPC_NOMOD"
+	"SPC_DBADDR"
 	)
       )
 
 
 (setq epicsdb-function 
+
       '(
+;;	"menu"
 	"prompt"
 	"promptgroup"
 	"special"
@@ -651,25 +785,30 @@
 	"initial"
 	"extra"
 	"asl"
-	
+;;	"recordtype"
+ 	"field"
+	"choice"
+;;	"registrar"
+;;	"variable"
+	"breaktable"
 	)
       )
 
 ;; create the regex string for each class of keywords
 ;;(setq epicsdb-comments-regexp  (regexp-opt epicsdb-comments  'words))
 
-(setq epicsdb-keywords-regexp  (regexp-opt epicsdb-keywords  'words))
+(setq epicsdb-keyword-regexp  (regexp-opt epicsdb-keyword  'words))
 (setq epicsdb-type-regexp      (regexp-opt epicsdb-types     'words))
-(setq epicsdb-constants-regexp (regexp-opt epicsdb-constants 'words))
+(setq epicsdb-constant-regexp (regexp-opt epicsdb-constant 'words))
 (setq epicsdb-variable-regexp    (regexp-opt epicsdb-variable    'words))
 (setq epicsdb-function-regexp  (regexp-opt epicsdb-function  'words))
 
 
 ;; clear memory
 ;;(setq epicsdb-comments nil)
-(setq epicsdb-keywords nil)
+(setq epicsdb-keyword nil)
 (setq epicsdb-types nil)
-(setq epicsdb-constants nil)
+(setq epicsdb-constant nil)
 (setq epicsdb-variable nil)
 (setq epicsdb-function nil)
 
@@ -688,26 +827,28 @@
 ;;
 ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Faces-for-Font-Lock.html
 ;;
-;; font-lock-warning-face
-;; font-lock-function-name-face
-;; font-lock-variable-name-face
-;; font-lock-keyword-face
-;; font-lock-comment-face
-;; font-lock-comment-delimiter-face
-;; font-lock-type-face
-;; font-lock-constant-face
-;; font-lock-builtin-face
-;; font-lock-preprocessor-face
-;; font-lock-string-face
-;; font-lock-doc-face
+;; - font-lock-keyword-face            "purple"
+;; - font-lock-type-face                "ForestGreen"
+;; - font-lock-constant-face               "dark cyan"
+;; - font-lock-variable-name-face      "sienna"
+;; - font-lock-function-name-face      "blue"
+;; - font-lock-comment-face            "FireBrick"
+;; - font-lock-string-face                 "VioletRed4"
+;; - font-lock-doc-face                    "VioletRed4"  "" is treated as String or Doc
+
+
+;; font-lock-warning-face                "Red1"
+;; font-lock-builtin-face                "MediumOrchid4"
+;; font-lock-preprocessor-face           "MediumOrchid4"
+
 ;; font-lock-negation-char-face
 
 
 (setq epicsdb-font-lock-keywords
   `(
-    (,epicsdb-keywords-regexp  . font-lock-keyword-face)
+    (,epicsdb-keyword-regexp   . font-lock-keyword-face)
     (,epicsdb-type-regexp      . font-lock-type-face)
-    (,epicsdb-constants-regexp . font-lock-constant-face)
+    (,epicsdb-constant-regexp  . font-lock-constant-face)
     (,epicsdb-variable-regexp  . font-lock-variable-name-face)
     (,epicsdb-function-regexp  . font-lock-function-name-face)
    
@@ -718,13 +859,44 @@
 ;; vdb, db, dbd
 ;; http://www.emacswiki.org/emacs/AutoModeAlist
 
-(add-to-list 'auto-mode-alist '("\\.*db*\\'" . epicsdb-mode))
+(add-to-list 'auto-mode-alist '("\\.?db?\\'" . epicsdb-mode))
 ;;(add-to-list 'auto-mode-alist '("\\.db\\'" . epicsdb-mode))
 ;;(add-to-list 'auto-mode-alist '("\\.dbd\\'" . epicsdb-mode))
 
 
+
+
+;; (defvar epicsdb-indent-offset 4
+;;   "*Indentation offset for `epicsdb-mode'.")
+
+;; (defun epicsdb-indent-line ()
+;;   "Indent current line for `epicsdb-mode'."
+;;   (interactive)
+;;   (let ((indent-col 0))
+;;     (save-excursion
+;;       (beginning-of-line)
+;;       (condition-case nil
+;;           (while t
+;;             (backward-up-list 1)
+;;             (when (looking-at "[[{]")
+;;               (setq indent-col (+ indent-col epicsdb-indent-offset))))
+;;         (error nil)
+;; 	)
+;;       )
+;;     (save-excursion
+;;       (back-to-indentation)
+;;       (when (and (looking-at "[[}]") (>= indent-col epicsdb-indent-offset))
+;;         (setq indent-col (- indent-col epicsdb-indent-offset))
+;; 	)
+;;       )
+;;     (indent-line-to indent-col)
+;;     )
+;;   )
+
+
+
 ;; define the mode
-(define-derived-mode epicsdb-mode c-mode
+(define-derived-mode epicsdb-mode sh-mode
   "epicsdb mode"
   "Major mode for editing EPICS DB, DBD, and VDB files …"
   :syntax-table epicsdb-mode-syntax-table
@@ -734,12 +906,17 @@
   (setq comment-start-skip "#+\\s-*")
 
   ;; clear memory
-  (setq epicsdb-keywords nil)
+  (setq epicsdb-keyword nil)
   (setq epicsdb-types nil)
-  (setq epicsdb-constants nil)
+  (setq epicsdb-constant nil)
   (setq epicsdb-variable nil)
   (setq epicsdb-function nil)
 
+  ;; (make-local-variable 'epicsdb-indent-offset)
+  ;; (setq (make-local-variable 'indent-line-function) 'epicsdb-indent-line)
+
+
 )
+
 
 (provide 'epicsdb-mode)
