@@ -1,0 +1,33 @@
+build-essential
+gfortran
+
+fonts-nanum
+fonts-nanum-coding
+fonts-nanum-eco
+fonts-nanum-extra
+
+libreadline-dev
+libxt-dev
+x11proto-print-dev
+libxmu-headers
+libxp-dev
+libxmu-dev
+libxmu6
+libxpm-dev
+libxmuu-dev
+libxmuu1
+libxmu6
+#     For Debian Wheezy,
+lesstif2-dev 
+# For Debian Jessie,
+#     For Debian Jessie
+#     See https://wiki.debian.org/lesstif2motifTransition, there is no more lsstif, use libmotif instead.
+# libmotif-dev
+libsnmp-dev
+re2c
+python-dev
+ntp
+screen
+emacs
+tree
+mc
