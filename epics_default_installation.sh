@@ -20,6 +20,13 @@
 # 
 #     aptitude install libreadline-dev  g++ libxt-dev lesstif2-dev x11proto-print-dev libxmu-headers libxp-dev libxmu-dev libxmu6  libxpm-dev libxmuu-dev libxmuu1 libxmu6 
 #
+#     For Debian Jessie
+#     See https://wiki.debian.org/lesstif2motifTransition, there is no more lesstif, use libmotif instead.
+#
+#     aptitude install libreadline-dev  g++ libxt-dev x11proto-print-dev libxmu-headers libxp-dev libxmu-dev libxmu6  libxpm-dev libxmuu-dev libxmuu1 libxmu6 libmotif-dev
+#
+
+#   
 #   * EPICS Base and extensionTop
 #   * Extensions List
 #     - StripTool2_5_16_0 
