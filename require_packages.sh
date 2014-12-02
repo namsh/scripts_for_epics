@@ -8,18 +8,29 @@
 #   - 0.0.1  December 1 00:01 KST 2014, jhlee
 #           * created
 #
+#   - 0.0.2 Tuesday, December  2 16:28:19 KST 2014, jhlee
+#           * seperated package lists according to distribution
+#
+#
+#
 # Some errors are printing while installing.....
 #
 # E: Can not write log (Is stdout a terminal?) - tcgetattr (25: Inappropriate ioctl for device)
-#
+
+## This tells bash that it should exit the script if any statement returns a non-true return value. 
+set -e
+# This will exit your script if you try to use an uninitialised variable
+set -u
 
 
 logfile="/tmp/common_package_installation.log"
-filename="package_list_common"
+common_filename="package_list_common"
+package_filename=""
 
 function local_aptitude()
 {
     echo "aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $1"
+    aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $1
 }
 
 # the following logic doesn't handle sudo case....
@@ -41,6 +52,9 @@ function local_aptitude()
 
 aptitude update
 
+echo "Logfile is saving in $logfile"
+
+
 while read -r line           
 do
 # Skip the empty line
@@ -51,22 +65,21 @@ do
 	#	aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $line
 	local_aptitude $line
     fi
-done < $filename
+done < $common_filename
 
 
 version=`lsb_release -c | awk '{print $2}'`
-echo $version
-
+#echo $version
 
 # add logic to install some packa
 case "$version" in
-   wheezy)
-	echo "Wheezy">&2
-	filename="package_list_wheezy"
+    wheezy)
+#	echo "Wheezy">&2
+	package_filename="package_list_wheezy"
 	;;
     jessie)
-	echo "Jessie">&2
-	filename="package_list_jessie"
+#	echo "Jessie">&2
+	package_filename="package_list_jessie"
 	;;
     *)
 	echo >&2
@@ -76,7 +89,10 @@ case "$version" in
 	;;
 esac
 
+
 logfile="/tmp/${version}_package_installation.log"
+
+echo "Logfile is saving in $logfile"
 
 while read -r line           
 do
@@ -86,10 +102,4 @@ do
 	[[ "$line" =~ ^#.*$ ]] && continue
 	local_aptitude $line
     fi
-done < $filename
-
-
-# For example,
-# For Wheezy lesstif2-dev
-# For Jessi  libmotif-dev
-
+done < $package_filename

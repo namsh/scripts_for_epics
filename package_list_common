@@ -1,15 +1,10 @@
-#lsb-release
+# Package List for Debian Common
+# 
+lsb-release
 
-logtail
-python-lxml
-gnome-system-tools
-rrdtool
-snmp-mibs-downloader
-build-essential
-gfortran
-snmp
-snmp-mibs-downloader
-
+#
+#
+#
 libreadline-dev
 libxt-dev
 x11proto-print-dev
@@ -21,7 +16,9 @@ libxpm-dev
 libxmuu-dev
 libxmuu1
 libxmu6
-
+#
+#
+#
 libsnmp-dev
 re2c
 python-dev
@@ -30,6 +27,7 @@ python-dev
 #  Basic Package List
 #
 #
+build-essential
 git
 ntp
 screen
@@ -39,11 +37,17 @@ mc
 xpdf
 glusterfs-client
 clusterssh
+logtail
+python-lxml
+gnome-system-tools
+rrdtool
+gfortran
+snmp
+snmp-mibs-downloader
 #
-# Hangul Input, Printer
+# Hangul fonts and Printer
 #
 system-config-printer
-ibus-hangul
 fonts-nanum
 fonts-nanum-coding
 fonts-nanum-eco
