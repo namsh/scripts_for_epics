@@ -14,30 +14,45 @@
 #
 
 
-# logfile=/tmp/package_installation.log
-# filename=package_list
+logfile="/tmp/common_package_installation.log"
+filename="package_list_common"
 
-# function local_aptitude()
-# {
-#     package_name = $1
-#     aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $package_name
-# }
+function local_aptitude()
+{
+    echo "aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $1"
+}
+
+# the following logic doesn't handle sudo case....
+# 
+# user=`whoami`
+# 
+# case "$whoami" in
+#     root)
+# 	continue;
+# 	;;
+#     *)
+# 	echo >&2
+# 	echo "You should run $0 script with the root privilege" >&2
+# 	echo >&2
+# 	exit 0
+# 	;;
+# esac
 
 
-# aptitude update
+aptitude update
 
+while read -r line           
+do
+# Skip the empty line
+    if [ "$line" ]; then
+	# Skip command 
+	[[ "$line" =~ ^#.*$ ]] && continue
+#        echo "aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $line"
+	#	aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $line
+	local_aptitude $line
+    fi
+done < $filename
 
-# while read -r line           
-# do
-# # Skip the empty line
-#     if [ "$line" ]; then
-# 	# Skip command 
-# 	[[ "$line" =~ ^#.*$ ]] && continue
-# #        echo "aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $line"
-# #	aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $line
-# 	local_aptitude $line
-#     fi
-# done < $filename
 
 version=`lsb_release -c | awk '{print $2}'`
 echo $version
@@ -45,16 +60,35 @@ echo $version
 
 # add logic to install some packa
 case "$version" in
-    wheezy)
+   wheezy)
+	echo "Wheezy">&2
+	filename="package_list_wheezy"
 	;;
-    jessi)
+    jessie)
+	echo "Jessie">&2
+	filename="package_list_jessie"
 	;;
     *)
 	echo >&2
 	echo "Doesn't support $version" >&2
 	echo >&2
+	exit 0
 	;;
 esac
+
+logfile="/tmp/${version}_package_installation.log"
+
+while read -r line           
+do
+# Skip the empty line
+    if [ "$line" ]; then
+	# Skip command 
+	[[ "$line" =~ ^#.*$ ]] && continue
+	local_aptitude $line
+    fi
+done < $filename
+
+
 # For example,
 # For Wheezy lesstif2-dev
 # For Jessi  libmotif-dev

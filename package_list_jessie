@@ -1,0 +1,4 @@
+# For Debian Jessie,
+#     For Debian Jessie
+#     See https://wiki.debian.org/lesstif2motifTransition, there is no more lsstif, use libmotif instead.
+libmotif-dev
