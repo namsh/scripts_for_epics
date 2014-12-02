@@ -14,40 +14,47 @@
 #
 
 
-logfile=/tmp/package_installation.log
-filename=package_list
+# logfile=/tmp/package_installation.log
+# filename=package_list
 
-function local_aptitude()
-{
-    package_name = $1
-    aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $package_name
-}
-
-
-aptitude update
+# function local_aptitude()
+# {
+#     package_name = $1
+#     aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $package_name
+# }
 
 
-while read -r line           
-do
-# Skip the empty line
-    if [ "$line" ]; then
-	# Skip command 
-	[[ "$line" =~ ^#.*$ ]] && continue
-#        echo "aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $line"
-#	aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $line
-	local_aptitude $line
-    fi
-done < $filename
+# aptitude update
+
+
+# while read -r line           
+# do
+# # Skip the empty line
+#     if [ "$line" ]; then
+# 	# Skip command 
+# 	[[ "$line" =~ ^#.*$ ]] && continue
+# #        echo "aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $line"
+# #	aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $line
+# 	local_aptitude $line
+#     fi
+# done < $filename
 
 version=`lsb_release -c | awk '{print $2}'`
 echo $version
 
 
 # add logic to install some packa
-case "$DO" in
-
-    local)
-ges which are dependent upon Debian version
+case "$version" in
+    wheezy)
+	;;
+    jessi)
+	;;
+    *)
+	echo >&2
+	echo "Doesn't support $version" >&2
+	echo >&2
+	;;
+esac
 # For example,
 # For Wheezy lesstif2-dev
 # For Jessi  libmotif-dev
