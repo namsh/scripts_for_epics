@@ -92,17 +92,13 @@ user@:~/scripts_for_epics$ su
 Password: 
 root@:{HOME}/scripts_for_epics# bash require_packages.sh 
 root@:{HOME}/scripts_for_epics# exit
-exit
 user@:~/scripts_for_epics$ bash epics_default_installation.sh 
-user@:~/scripts_for_epics$ cd ../epics/
-user@:~/epics$ ls
-downloads  R3.14.12.4
-user@:~/epics$ cd R3.14.12.4/
+user@:~/scripts_for_epics$ cd ../epics/R3.14.12.4/
 user@:~/epics/R3.14.12.4$ ls
 base  extensions  setEpicsEnv.sh
 user@:~/epics/R3.14.12.4$ . setEpicsEnv.sh 
 ```
 
   The installation log files for require_packages.sh are located in 
-  /tmp/common_package_installation.log and 
-  /tmp/wheezy_package_installation.log
+  * /tmp/common_package_installation.log and 
+  * /tmp/wheezy_package_installation.log
