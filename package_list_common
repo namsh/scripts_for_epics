@@ -39,7 +39,7 @@ glusterfs-client
 clusterssh
 logtail
 python-lxml
-gnome-system-tools
+#gnome-system-tools
 rrdtool
 gfortran
 snmp
