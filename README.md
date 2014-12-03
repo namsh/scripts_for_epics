@@ -17,9 +17,8 @@ scripts_for_epics
   * Must install the following packages via root or sudo
     before running this script
 
-    For Debian Wheezy,
+    See require_packages_sh
 
-    aptitude install libreadline-dev  g++ libxt-dev lesstif2-dev x11proto-print-dev libxmu-headers libxp-dev libxmu-dev libxmu6  libxpm-dev libxmuu-dev libxmuu1 libxmu6 
 
   * EPICS Base and extensionTop
   * Extensions List
@@ -73,3 +72,37 @@ scripts_for_epics
     * add the following lines in ${HOME}/.emacs 
        (load-file "$HOME/.emacs.d/epicsdb-mode.el")
        (require 'epicsdb-mode)
+
+
+3. require_packages.sh
+
+    This script reads two of three package list files such as package_list_wheezy, package_list_jessie, package_list_common. The distribution of Debian
+    wheezy or jessie will be selected via lsb_release  command. And install all required packages for EPICS base and extensions and RAON default packages without asking questions. 
+
+
+
+  
+4. Here is the quick installation log 
+
+  user@:~$ git clone https://github.com/jeonghanlee/scripts_for_epics
+  user@:~$ cd scripts_for_epics/
+  user@:~/scripts_for_epics$ su
+  Password: 
+  root@:{HOME}/scripts_for_epics\# bash require_packages.sh 
+
+  root@:{HOME}/scripts_for_epics\# exit
+  exit
+  user@:~/scripts_for_epics$ bash epics_default_installation.sh 
+
+  user@:~/scripts_for_epics$ cd ../epics/
+  user@:~/epics$ ls
+  downloads  R3.14.12.4
+  user@:~/epics$ cd R3.14.12.4/
+  user@:~/epics/R3.14.12.4$ ls
+  base  extensions  setEpicsEnv.sh
+  user@:~/epics/R3.14.12.4$ . setEpicsEnv.sh 
+
+
+  The installation log files for require_packages.sh are located in 
+  /tmp/common_package_installation.log and 
+  /tmp/wheezy_package_installation.log
