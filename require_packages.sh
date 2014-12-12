@@ -49,6 +49,9 @@ function local_aptitude()
 # 	;;
 # esac
 
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+common_filepath=${DIR}/${common_filename}
+
 
 aptitude update
 
@@ -65,7 +68,7 @@ do
 	#	aptitude  -q --log-level=info --log-file=$logfile --assume-yes install $line
 	local_aptitude $line
     fi
-done < $common_filename
+done < $common_filepath
 
 
 version=`lsb_release -c | awk '{print $2}'`
@@ -94,6 +97,8 @@ logfile="/tmp/${version}_package_installation.log"
 
 echo "Logfile is saving in $logfile"
 
+package_filepath=${DIR}/${package_filename}
+
 while read -r line           
 do
 # Skip the empty line
@@ -102,4 +107,4 @@ do
 	[[ "$line" =~ ^#.*$ ]] && continue
 	local_aptitude $line
     fi
-done < $package_filename
+done < $package_filepath
