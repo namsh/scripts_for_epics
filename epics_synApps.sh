@@ -58,7 +58,7 @@ epics=${HOME}/epics
 
 epics_downloads=${epics}/downloads
 
-current_epics_path=${EPICS_BASE}/../
+current_epics_path=${EPICS_PATH}
 
 current_modules_path=${current_epics_path}/modules
 
