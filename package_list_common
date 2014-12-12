@@ -1,7 +1,6 @@
 # Package List for Debian Common
 # 
 lsb-release
-
 #
 #
 #
@@ -30,6 +29,7 @@ python-dev
 build-essential
 git
 ntp
+ntpdate
 screen
 emacs
 tree
