@@ -1,0 +1,57 @@
+<!DOCTYPE html> 
+<html> 
+<head>
+        <meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="refresh" content="300">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<title>MUNJI Environment 7 Days Monitoring Page</title> 
+	<link rel='stylesheet' href='../styles/common.css' type='text/css' />
+	<script src="http://api.simile-widgets.org/timeplot/1.1/timeplot-api.js" type="text/javascript"></script>
+        <script src="timeplot.js"     type="text/javascript"></script>
+	<style>
+          body {
+          background-color: #fff;
+          background-image: none;
+          }
+          
+          .label {
+          <!-- color: #666; -->
+          margin-top: 0.5em;
+          padding: 0.1em;
+          font-family: 'verdana', 'helvetica', sans serif;
+          }        
+          
+          .timeplot-grid-label {
+          color: #333;
+          font-family: 'verdana', 'helvetica', sans serif;
+          font-size: 10px !important;
+          }
+          
+          .sources {
+          font-size: 100%;
+          }
+	</style>
+	
+</head>
+
+<body onload="onLoad();" onresize="onResize();"> 
+<div id="header">
+  <h1>SRF Test Facility Site Environment Seven Days Monitoring Page</h1>
+</div>
+<div id="content">
+  <div class="label">Temperature [ &deg;C ] at munjipi0 : Average Sampling over 5 mins  </div>
+  <div id="timeplot1" class="timeplot"></div>
+  <div class="label">Temperature  [ &deg;C ] at munjipi1 : Average Sampling over 5 mins</div>
+  <div id="timeplot2" class="timeplot"></div>
+  <div class="label">Temperature  [ &deg;C ] at munjipi2 : Average Sampling over 5 mins</div>
+  <div id="timeplot3" class="timeplot"></div>
+  <div class="label">Air Quality PM10 [ &mu;g/m<sup>3</sup> ] at munjipi1 : Average Sampling over 5 mins</div>
+  <div id="timeplot4" class="timeplot"></div>
+</div>
+<div id="footer">
+  Powered by <a href="http://www.simile-widgets.org/timeplot/"> SIMILE Timeplot.</a> <br/>
+  Copyright &#0169; RAON Accelerator Control Team, Rare Isotope Science Project, <a href="http://www.ibs.re.kr"> Institute for Basic Science </a>, Yuseonggu, Daejeon, 305-811, South Korea. 
+</div>
+</body>
+</html>
