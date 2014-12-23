@@ -50,7 +50,7 @@ import argparse
 import socket
 import shutil
 # import numpy as np
-from chaco.shell import *
+#from chaco.shell import *
 
 import urllib
 import urllib2

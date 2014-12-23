@@ -24,10 +24,10 @@ function onLoad() {
 //   var gridColor  = new Timeplot.Color('#333333');
 
 
-    var monitor1URL = "./data/munjipi0_ds1820.txt";
-    var monitor2URL = "./data/munjipi1_ds1820.txt";
-    var monitor3URL = "./data/munjipi2_ds1820.txt";
-    var monitor4URL = "./data/munjipi1_dust.txt";
+    var monitor1URL = "./data/munji-pi0_ds1820.txt";
+    var monitor2URL = "./data/munji-pi1_ds1820.txt";
+    var monitor3URL = "./data/munji-pi2_ds1820.txt";
+    var monitor4URL = "./data/munji-pi1_dust.txt";
 
     var timeGeometry = new Timeplot.DefaultTimeGeometry({
         gridColor: gridColor
