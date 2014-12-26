@@ -9,8 +9,7 @@
 #
 #     crontab -e, add the following line
 #
-#* *  * * * export DISPLAY=:0.0 && /usr/bin/python /where/the/script/is/getData.py >/dev/null 2>&1
-# */5 *  * * * export DISPLAY=:0.0 && /usr/bin/python /home/jhlee/programming/scripts/python/archiver.appliance/getData.py -i 10.1.4.173 -d 7 >/dev/null 2>&1
+#*/5 *  * * * export DISPLAY=:0.0 && /usr/bin/python /home/ctrluser/scripts_for_epics/archiver.appliance.python/moveFiles.py >/dev/null 2>&1
 
 import os
 import sys
@@ -19,7 +18,7 @@ import shutil
 #from chaco.shell import *
 import socket
 from datetime import timedelta, datetime, date
-
+#import time
 
 
 def main():
@@ -29,15 +28,15 @@ def main():
 
     _now = datetime.now()
     
-    print _now
+#    print _now
 
     _now_iso_string  = _now.isoformat()
     
     hostname = socket.gethostname() 
     hostip   = socket.gethostbyname(hostname)
     
-    capture_filename1 = "munji-pi0"
-    capture_filename2 = "munji-pi1"
+    capture_filename1 = "munji-pi0.png"
+    capture_filename2 = "munji-pi1.png"
 
     dest_directory = "/var/www/images/"
 
@@ -47,18 +46,26 @@ def main():
     fileList.append(capture_filename2)
 
     temp_filename = ""
-
+    wget_command  = ""
 #    print fileList
 
-    for afile in sorted(fileList):
+    wget_pi1 = "/usr/bin/wget -O /tmp/" + capture_filename1 + " http://192.168.1.100:8080/?action=snapshot"
+    wget_pi2 = "/usr/bin/wget -O /tmp/" + capture_filename2 + " http://192.168.1.101:8080/?action=snapshot"
+
+    print wget_pi1
+    os.system(wget_pi1)
+    os.system(wget_pi2)
+
+    for afile in fileList:
         
-        temp_filename = "/home/ctrluser/pi_camera_captures/" + afile
-        dest_filename = dest_directory + _now_iso_string + "_" + afile + ".jpg"
+        temp_filename = "/tmp/" + afile
+        dest_filename = dest_directory + _now_iso_string + "_" + afile
 
 #        shutil.copy (temp_filename, dest_directory)
-#        print temp_filename, dest_filename
-        shutil.copyfile (temp_filename, dest_filename)
-
+        print temp_filename, dest_filename
+        shutil.copy2(temp_filename, dest_filename)
+#        os.system('cp ' + temp_filename + ' ' + dest_filename)
+#        time.sleep(.200)
         # plot(secs, vals, "r-")
         # xscale('time')
         # show()
