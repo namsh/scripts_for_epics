@@ -1,5 +1,8 @@
 
-var timeplot = null;
+var timeplot1 = null;
+var timeplot2 = null;
+var timeplot3 = null;
+var timeplot4 = null;
 
 function onLoad() {
 
@@ -73,8 +76,8 @@ function onLoad() {
 	
     ];
     
-    timeplot = Timeplot.create(document.getElementById("timeplot1"), plotInfo1);
-    timeplot.loadText(monitor1URL, ",", eventSource1);
+    timeplot1 = Timeplot.create(document.getElementById("timeplot1"), plotInfo1);
+    timeplot1.loadText(monitor1URL, ",", eventSource1);
 
     var geometry2 = new Timeplot.DefaultValueGeometry({
         gridColor: gridColor
@@ -95,7 +98,7 @@ function onLoad() {
     	    , timeGeometry: timeGeometry
     	    , valueGeometry: geometry2
 	    , lineColor: green
-    	    , dotColor: green.lighten(30)
+ //   	    , dotColor: green.lighten(30)
     	    , showValues: true	    
     	    , roundValues: false
 
@@ -113,8 +116,8 @@ function onLoad() {
 	
     ];
     
-    timeplot = Timeplot.create(document.getElementById("timeplot2"), plotInfo2);
-    timeplot.loadText(monitor2URL, ",", eventSource2);
+    timeplot2 = Timeplot.create(document.getElementById("timeplot2"), plotInfo2);
+    timeplot2.loadText(monitor2URL, ",", eventSource2);
 
    
     var geometry3 = new Timeplot.DefaultValueGeometry({
@@ -152,8 +155,8 @@ function onLoad() {
 	
     ];
     
-    timeplot = Timeplot.create(document.getElementById("timeplot3"), plotInfo3);
-    timeplot.loadText(monitor3URL, ",", eventSource3);
+    timeplot3 = Timeplot.create(document.getElementById("timeplot3"), plotInfo3);
+    timeplot3.loadText(monitor3URL, ",", eventSource3);
 
   
 
@@ -193,8 +196,8 @@ function onLoad() {
 	
     ];
     
-    timeplot = Timeplot.create(document.getElementById("timeplot4"), plotInfo4);
-    timeplot.loadText(monitor4URL, ",", eventSource4);
+    timeplot4 = Timeplot.create(document.getElementById("timeplot4"), plotInfo4);
+    timeplot4.loadText(monitor4URL, ",", eventSource4);
 
 }
 
