@@ -59,12 +59,14 @@ def main():
     for afile in fileList:
         
         temp_filename = "/tmp/" + afile
-        dest_filename = dest_directory + _now_iso_string + "_" + afile
-
+        dest_filename = dest_directory + "pngs/" + _now_iso_string + "_" + afile
 #        shutil.copy (temp_filename, dest_directory)
         print temp_filename, dest_filename
         shutil.copy2(temp_filename, dest_filename)
-#        os.system('cp ' + temp_filename + ' ' + dest_filename)
+
+#  ln -sf /var/www/images/pngs/2015-01-06T17:40:34.803806_munji-pi0.png /var/www/images/current.png
+
+        os.system('ln -sf ' + dest_filename + ' ' + dest_directory + afile)
 #        time.sleep(.200)
         # plot(secs, vals, "r-")
         # xscale('time')
