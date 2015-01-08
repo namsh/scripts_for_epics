@@ -1,3 +1,5 @@
+// Author  : Jeong Han Lee
+// email   : jhlee@ibs.re.kr
 
 var timeplot1 = null;
 var timeplot2 = null;
@@ -63,7 +65,7 @@ function onLoad() {
 	    //	    ,fillColor: quietLine.lighten(60)
 	    , showValues: true
 	    , roundValues: false
-	}),
+	})
 
         // Timeplot.createPlotInfo
 	// ({
@@ -102,7 +104,7 @@ function onLoad() {
     	    , showValues: true	    
     	    , roundValues: false
 
-    	}),
+    	})
 
         // Timeplot.createPlotInfo
     	// ({
@@ -141,7 +143,7 @@ function onLoad() {
 //	    , dotColor: color4.lighten(40)
     	    , showValues: true
     	    , roundValues: false
-    	}),
+    	})
 
         // Timeplot.createPlotInfo
     	// ({
@@ -182,7 +184,7 @@ function onLoad() {
     	    , lineColor: yellow
     	    , showValues: true
     	    , roundValues: false
-    	}),
+    	})
 
         // Timeplot.createPlotInfo
     	// ({
