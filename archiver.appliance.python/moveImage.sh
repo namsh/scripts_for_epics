@@ -4,7 +4,8 @@
 # email  : jhlee@ibs.re.kr
 # Date   : Thursday, January  8 10:53:10 KST 2015
 # version : 0.1
-# bash -c '/home/jhlee/programming/scripts/bash/bk_jhlee.sh all' >/dev/null 2>&
+
+# bash -c '/home/ctrluser/scripts_for_epics/archiver.appliance.python/moveImage.sh' > /dev/null 2>&1
 
 # cq   : quiet 
 # c    : verbose
@@ -25,7 +26,7 @@ link_images()
     src_filename=${convert_tgt}/${afile}
     tgt_filename=${target_dir}/${bfile}
     
-    echo "${ln_cmd} ${src_filename} ${tgt_filename}"
+    ${ln_cmd} ${src_filename} ${tgt_filename}
 }
 
 
@@ -37,7 +38,7 @@ overlay_images()
     src_filename="/tmp/${filename}"
     tgt_filename=${convert_tgt}/${filename}
 
-    echo "${convert_cmd} ${src_filename} ${convert_opt} '%f' ${tgt_filename}"
+    ${convert_cmd} ${src_filename} ${convert_opt} '%f' ${tgt_filename}
 
 }
  
@@ -49,7 +50,7 @@ get_images()
 
     temp_dir=/tmp/
 
-    echo "$wget_options http://${ipadd}:8080/?action=snapshot -O ${temp_dir}${filename}"
+    $wget_options http://${ipadd}:8080/?action=snapshot -O ${temp_dir}${filename}
     
     overlay_images ${filename}
     
@@ -81,7 +82,6 @@ for (( i = 0 ; i < ${filenum} ; i++ ))
 do
     get_images ${b_filenames[$i]} ${ip_adds[$i]}
     link_images ${b_filenames[$i]} ${a_filenames[$i]}
-
-    echo ""
+#    echo ""
 done
 
