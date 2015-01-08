@@ -1,7 +1,9 @@
 * Compile js by using closure-compiler 
 
--- Download and compile compiler
+Download and compile compiler
 
+
+```bash
 jhlee@kaffee:~$ mkdir github
 jhlee@kaffee:~$ cd github/
 jhlee@kaffee:~/github$ git clone https://github.com/google/closure-compiler.git
@@ -18,8 +20,6 @@ jhlee@kaffee:~/github$ cd closure-compiler/
 jhlee@kaffee:~/github/closure-compiler$ ls
 build.xml  CONTRIBUTORS  externs/  lib/          pom.xml    src/
 contrib/   COPYING       gen/      pom-main.xml  README.md  test/
-
-
 
 
 jhlee@kaffee:~/github/closure-compiler$ ant jar
@@ -56,11 +56,11 @@ jar:
 
 BUILD SUCCESSFUL
 Total time: 9 seconds
-
+```
 
 * Compile timeplot.js to create timeplot_c.js
 
 
-
+```bash
 jhlee@kaffee:~/scripts_for_epics/archiver.appliance.python$ java -jar ~/github/closure-compiler/build/compiler.jar --js_output_file=www/timeplot_c.js www/timeplot.js 
-
+```
