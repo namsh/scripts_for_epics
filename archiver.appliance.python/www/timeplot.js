@@ -8,23 +8,23 @@ var timeplot4 = null;
 
 function onLoad() {
 
-    var color1 = new Timeplot.Color('#FFD176');
-    var color2 = new Timeplot.Color('#FFB43D');
-    var color3 = new Timeplot.Color('#EB800F');
+    // var color1 = new Timeplot.Color('#FFD176');
+    // var color2 = new Timeplot.Color('#FFB43D');
+    // var color3 = new Timeplot.Color('#EB800F');
     var color4 = new Timeplot.Color('#964D1D');
-    var color5 = new Timeplot.Color('#66463E');
-    var quietLine  = new Timeplot.Color('#82A6A2');
-    var loudLine   = new Timeplot.Color('#284452');
-    var lightFill  = new Timeplot.Color('#DEE5D1');
+    // var color5 = new Timeplot.Color('#66463E');
+    // var quietLine  = new Timeplot.Color('#82A6A2');
+    // var loudLine   = new Timeplot.Color('#284452');
+    // var lightFill  = new Timeplot.Color('#DEE5D1');
     var gridColor  = new Timeplot.Color('#888888');
 
-    var blue   = new Timeplot.Color("#455681");
-    var azur   = new Timeplot.Color("#0090FF");
+    // var blue   = new Timeplot.Color("#455681");
+    // var azur   = new Timeplot.Color("#0090FF");
     var yellow = new Timeplot.Color("#ffd700");
-    var orange = new Timeplot.Color("#BB4A1B");
+    // var orange = new Timeplot.Color("#BB4A1B");
     var red    = new Timeplot.Color("#ff0000");
     var green = new Timeplot.Color('#468966');
-    var lightGreen = new Timeplot.Color('#5C832F');
+    // var lightGreen = new Timeplot.Color('#5C832F');
 
 //   var gridColor  = new Timeplot.Color('#333333');
 
@@ -38,12 +38,14 @@ function onLoad() {
         gridColor: gridColor
 	, axisLabelsPlacement: "top"
 	, min : 0
+
     });
 
     var geometry1 = new Timeplot.DefaultValueGeometry({
         gridColor: gridColor
 	, axisLabelsPlacement: "left"
-	, min : -20
+	, min : -15
+	, max : 30
     });
 
 
@@ -84,7 +86,8 @@ function onLoad() {
     var geometry2 = new Timeplot.DefaultValueGeometry({
         gridColor: gridColor
 	, axisLabelsPlacement: "left"
-	, min : -20
+	, min : -15
+	, max : 30
     });
 
 
@@ -125,7 +128,8 @@ function onLoad() {
     var geometry3 = new Timeplot.DefaultValueGeometry({
         gridColor: gridColor
 	, axisLabelsPlacement: "left"
-	, min : -20
+	, min : -15
+	, max : 30
     });
 
     var eventSource3 = new Timeplot.DefaultEventSource();
