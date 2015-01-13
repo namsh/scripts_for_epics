@@ -3,7 +3,15 @@
 # Author  : Jeong Han Lee
 # email   : jhlee@ibs.re.kr
 # Date    : Friday, December 12 14:37:20 KST 2014
-# version : 0.0.1
+# version : 0.0.2
+#
+#           0.0.1 created  Friday, December 12 14:37:20 KST 2014
+#
+#           0.0.2 Tuesday, January 13 17:16:53 KST 2015
+#                 - change the installation directory epicsLibs
+#                   instead of modules. epicsLibs will be used
+#                   for other EPICS driven libraries (EtherIP,
+#                   and so on ....)
 #
 
 
@@ -60,7 +68,7 @@ epics_downloads=${epics}/downloads
 
 current_epics_path=${EPICS_PATH}
 
-current_modules_path=${current_epics_path}/modules
+current_modules_path=${current_epics_path}/epicsLibs
 
 mkdir -p ${current_modules_path}
 

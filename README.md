@@ -100,5 +100,64 @@ user@:~/epics/R3.14.12.4$ . setEpicsEnv.sh
 ```
 
   The installation log files for require_packages.sh are located in 
-  * /tmp/common_package_installation.log and 
+  * /tmp/common_package_installation.log 
+    and 
   * /tmp/wheezy_package_installation.log
+
+
+4. epics_synApps.sh will install the synApps as the following way:
+
+```bash
+  user@:~$ bash ~/scripts_for_epics/epics_synApps.sh 
+
+ jhlee@kaffee:~/epics/R3.14.12.4/epicsLibs$ tree -L 3
+.
+└── [       4096]  synApps_5_7
+    └── [       4096]  support
+        ├── [       4096]  allenBradley-2-2
+        ├── [       4096]  areaDetector-1-9-1
+        ├── [       4096]  asyn-4-21
+        ├── [       4096]  autosave-5-1
+        ├── [       4096]  busy-1-6
+        ├── [       4096]  calc-3-2
+        ├── [       4096]  camac-2-7
+        ├── [        665]  checkout.bat
+        ├── [        474]  checkout.csh
+        ├── [       4096]  configure
+        ├── [       4096]  dac128V-2-7
+        ├── [       4096]  delaygen-1-1-0
+        ├── [       4096]  devIocStats-3-1-7
+        ├── [       4096]  documentation
+        ├── [        163]  dotag
+        ├── [       4096]  dxp-3-2
+        ├── [       1780]  export.csh
+        ├── [       4096]  ip-2-14
+        ├── [       4096]  ip330-2-7
+        ├── [       4096]  ipac-2-12
+        ├── [       4096]  ipUnidig-2-9
+        ├── [       3581]  LICENSE
+        ├── [       4096]  love-3-2-5
+        ├── [       5103]  Makefile
+        ├── [       4096]  mca-7-4
+        ├── [       4096]  measComp-1-0
+        ├── [       4096]  modbus-2-4
+        ├── [       4096]  motor-6-8
+        ├── [       4096]  optics-2-9-1
+        ├── [         89]  propsetForHtml.csh
+        ├── [       4096]  quadEM-4-0
+        ├── [       1973]  README
+        ├── [       4096]  seq-2-1-13
+        ├── [       4096]  softGlue-2-3
+        ├── [       4096]  sscan-2-9
+        ├── [       4096]  std-3-2
+        ├── [       4096]  stream-2-6
+        ├── [        413]  update.bat
+        ├── [        246]  update.csh
+        ├── [       4096]  utils
+        ├── [       4096]  vac-1-4-1
+        ├── [       4096]  vme-2-8-1
+        └── [       4096]  xxx-5-7-1
+
+
+```
+  
