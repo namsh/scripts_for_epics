@@ -48,17 +48,19 @@ motorApps_path=${current_epicsLibs_path}/motorApps
 
 
 
-make_epics_release()
+
+make_release()
 {
     local name=$1
-    local rfile="${motorApps_path}/${name}/configure/RELEASE"
-    
+
     case ${name} in
 	ipac* | seq* | asyn* | motor* )
 	    echo "$name"
 	    ;;
 	busy* )
-	    echo "$name"
+	    name=${name//_R/-}
+	    echo $name
+
 	    #sed -i~  "s|^EPICS_BASE=.*|EPICS_BASE=${EPICS_PATH}/base|g" "${rfile}"
 	    ;;
        	*)
@@ -67,6 +69,26 @@ make_epics_release()
             ;;
     esac
     
+    local rfile="${motorApps_path}/${name}/configure/RELEASE"
+    sed -i~  "s|^EPICS_BASE=.*|EPICS_BASE=${EPICS_PATH}/base|g" "${rfile}"
+
+
+    
+    case ${name} in
+	ipac* | seq* | asyn* | motor* )
+	    echo "$name"
+	    ;;
+	busy* )
+	    name=${name//_R/-}
+	    echo $name
+
+	    #sed -i~  "s|^EPICS_BASE=.*|EPICS_BASE=${EPICS_PATH}/base|g" "${rfile}"
+	    ;;
+       	*)
+            echo "This script  doesn't support the package : ${name}"
+            exit 1
+            ;;
+    esac
     # # # substitution a path with b path in a file by using sed
     # # #
     # # # PATH has /, so use | instead of / as a seperator
@@ -138,7 +160,7 @@ done
 for (( i = 0 ; i < ${filenum} ; i++ )) 
 do
     
-    make_epics_release ${names[$i]} 
+    make_release ${names[$i]} 
 
 done
 
