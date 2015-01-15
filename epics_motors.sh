@@ -28,7 +28,7 @@ wget_options="wget -c"
 # xzf  : quiet
 # xzfv : verbose
 # xzfk : don't replace existing files when extracting
-tar_command="tar xzfk "
+tar_command="tar xzf "
 make_command_base=""
 
 #
@@ -48,24 +48,38 @@ motorApps_path=${current_epicsLibs_path}/motorApps
 
 
 
-make_release()
+make_epics_release()
 {
     local name=$1
     local rfile="${motorApps_path}/${name}/configure/RELEASE"
-      # #
-    # # substitution a path with b path in a file by using sed
-    # #
-    # # PATH has /, so use | instead of / as a seperator
-    # #
-    # # ^SUPPORT : ^ selects only the first character
-    # # ^SUPPORT=.* : Start with SUPPORT=blabla..... 
-    # #
-    # sed -i~ "s|^SUPPORT=.*|SUPPORT=${motor_dir}|g" "${motor_release}"
-    sed -i  "s|^EPICS_BASE=.*|EPICS_BASE=${EPICS_PATH}/base|g" "${rfile}"
+    
+    case ${name} in
+	ipac* | seq* | asyn* | motor* )
+	    echo "$name"
+	    ;;
+	busy* )
+	    echo "$name"
+	    #sed -i~  "s|^EPICS_BASE=.*|EPICS_BASE=${EPICS_PATH}/base|g" "${rfile}"
+	    ;;
+       	*)
+            echo "This script  doesn't support the package : ${name}"
+            exit 1
+            ;;
+    esac
+    
+    # # # substitution a path with b path in a file by using sed
+    # # #
+    # # # PATH has /, so use | instead of / as a seperator
+    # # #
+    # # # ^SUPPORT : ^ selects only the first character
+    # # # ^SUPPORT=.* : Start with SUPPORT=blabla..... 
+    # # #
+    # # sed -i~ "s|^SUPPORT=.*|SUPPORT=${motor_dir}|g" "${motor_release}"
+    # sed -i~  "s|^EPICS_BASE=.*|EPICS_BASE=${EPICS_PATH}/base|g" "${rfile}"
 
-    # # make release
-    # # make clean uninstall
-    # # make -j
+    # # # make release
+    # # # make clean uninstall
+    # # # make -j
 }
 
 downloads()
@@ -73,9 +87,9 @@ downloads()
     local site=$1
     local file=$2
     local link=${site}${file}
-#    echo "$wget_options ${link} -P ${epics_downloads} "
-    $wget_options ${link} -P ${epics_downloads} 
-    $tar_command ${epics_downloads}/${file} -C  ${motorApps_path}
+    echo "$wget_options ${link} -P ${epics_downloads} "
+    $tar_command ${epics_downloads}/${file}  -C  ${motorApps_path}
+    
 
 }
 
@@ -86,13 +100,13 @@ mkdir -p ${motorApps_path}
 ipac_version="2.13"
 seq_version="2.1.16"
 asyn_version="4-24"
-busy_version="R1-6-1"
+busy_version="1-6-1"
 motor_version="6-9"
 
 ipac_name="ipac-${ipac_version}"
 seq_name="seq-${seq_version}"
 asyn_name="asyn${asyn_version}"
-busy_name="busy_${busy_version}"
+busy_name="busy_R${busy_version}"
 motor_name="motorR${motor_version}"
 
 
@@ -117,14 +131,14 @@ sites=( "${ipac_site}" "${seq_site}" "${asyn_site}" "${busy_site}" "${motor_site
 for (( i = 0 ; i < ${filenum} ; i++ )) 
 do
     downloads ${sites[$i]} ${files[$i]} 
-
+  
 done
-
 
 
 for (( i = 0 ; i < ${filenum} ; i++ )) 
 do
-    make_release ${names[$i]} 
+    
+    make_epics_release ${names[$i]} 
 
 done
 
