@@ -43,7 +43,7 @@
 #
 #* *  * * * export DISPLAY=:0.0 && /usr/bin/python /where/the/script/is/getData.py >/dev/null 2>&1
 # */5 *  * * * export DISPLAY=:0.0 && /usr/bin/python /home/jhlee/programming/scripts/python/archiver.appliance/getData.py -i 10.1.4.173 -d 7 >/dev/null 2>&1
-
+#*/5 *  * * * export DISPLAY=:0.0 && /usr/bin/python /home/sjkim/scripts_for_epics/archiver.appliance.python/getData.py -i 164.125.122.212 -d 7  >/dev/null 2>&1
 import os
 import sys
 import argparse 
