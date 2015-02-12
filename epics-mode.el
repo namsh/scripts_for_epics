@@ -1,8 +1,8 @@
-;; emacs el : epicsdb_mode.el
+;; emacs el : epics-_mode.el
 ;; Author   : Jeong Han Lee
 ;; email    : jhlee@ibs.re.kr
 ;; Date     : Friday, September  5 13:17:02 KST 2014
-;; version  : 0.0.2
+;; version  : 0.1.0
 ;;
 ;; 0.0.1    : Friday, September  5 13:17:37 KST 2014
 ;;            created
@@ -11,7 +11,9 @@
 ;;              indent.
 ;;            - re-order keyword, type, and so on...
 ;;            - add more constants...
-;;
+;; 0.1.0    : Thursday, February 12 10:07:06 KST 2015
+;;            - add proto file into db, so rename
+;;              epicsdb to epics mode. 
 ;;  
 
 ;; The references for writing this codes are 
@@ -24,10 +26,10 @@
 ;;
 ;; 1) put this file in ${HOME}/.emacs.d/
 ;; 2) add the following lines in ${HOME}/.emacs 
-;;    (load-file "$HOME/.emacs.d/epicsdb-mode.el")
-;;    (require 'epicsdb-mode)
+;;    (load-file "$HOME/.emacs.d/epics-mode.el")
+;;    (require 'epics-mode)
 
-;; keyward : purple
+;; keyword : purple
 ;; type    : green
 ;; comment : red
 ;; event   : pink
@@ -36,8 +38,9 @@
 ;;
 
 ;; define several class of keywords
- (setq epicsdb-keyword 
+ (setq epics-keyword 
        '(
+;; db definition
  	"path"
  	"addpath"
  	"include"
@@ -55,13 +58,22 @@
 ;; 	"grecord"
 ;; 	"info"
  	"alias"
+
+;;
+;; Protocol Exception Handlers
+;;
+	"mismatch"
+	"writetimeout"
+	"replytimeout"
+	"readtimeout"
+	"init"
 	)
        )
 
 ;;
 ;; EPICS Record Type https://wiki-ext.aps.anl.gov/epics/index.php/RRM_3-14
 ;;
-(setq epicsdb-types 
+(setq epics-types 
       '(
 	"aai"
 	"aao"
@@ -98,7 +110,7 @@
 ;;
 ;; EPICS Field Commons https://wiki-ext.aps.anl.gov/epics/index.php/RRM_3-14_dbCommon
 ;;
-(setq epicsdb-constant 
+(setq epics-constant 
       '(
 	;; SCAN Fields
 	"SCAN"
@@ -692,12 +704,19 @@
 	"NORD"
 	"BPTR"
 	"MALM"
+;;
+;; Protocol the input value of the system variable
+;;
+	"CR"
+	"Ignore"
+	"Error"
+	
 	)
       )
 
-;;(setq epicsdb-events '("at_rot_target" "at_target" "attach"))
-(setq epicsdb-variable
-;;(setq epicsdb-functions 
+;;(setq epics-events '("at_rot_target" "at_target" "attach"))
+(setq epics-variable
+;;(setq epics-functions 
       '(
 	"PP"
 	"NPP"
@@ -768,11 +787,25 @@
 	"SPC_MOD"
 	"SPC_NOMOD"
 	"SPC_DBADDR"
+;;
+;; Protocol System Variables
+;;
+	"LockTimeout"
+	"WriteTimeout"
+	"ReplyTimeout"
+	"ReadTimeout"
+	"PollPeriod"
+	"Terminator"
+	"OutTerminator"
+	"InTerminator"
+	"MaxInput"
+	"Separator"
+	"ExtraInput"
 	)
       )
 
 
-(setq epicsdb-function 
+(setq epics-function 
 
       '(
 ;;	"menu"
@@ -791,36 +824,45 @@
 ;;	"registrar"
 ;;	"variable"
 	"breaktable"
+;; 
+;; protocol definition : Commands
+	"out"
+	"in"
+	"wait"
+	"event"
+	"exec"
+	"disconnect"
+	"connect"
 	)
       )
 
 ;; create the regex string for each class of keywords
-;;(setq epicsdb-comments-regexp  (regexp-opt epicsdb-comments  'words))
+;;(setq epics-comments-regexp  (regexp-opt epics-comments  'words))
 
-(setq epicsdb-keyword-regexp  (regexp-opt epicsdb-keyword  'words))
-(setq epicsdb-type-regexp      (regexp-opt epicsdb-types     'words))
-(setq epicsdb-constant-regexp (regexp-opt epicsdb-constant 'words))
-(setq epicsdb-variable-regexp    (regexp-opt epicsdb-variable    'words))
-(setq epicsdb-function-regexp  (regexp-opt epicsdb-function  'words))
+(setq epics-keyword-regexp   (regexp-opt epics-keyword   'words))
+(setq epics-type-regexp      (regexp-opt epics-types     'words))
+(setq epics-constant-regexp  (regexp-opt epics-constant  'words))
+(setq epics-variable-regexp  (regexp-opt epics-variable  'words))
+(setq epics-function-regexp  (regexp-opt epics-function  'words))
 
 
 ;; clear memory
-;;(setq epicsdb-comments nil)
-(setq epicsdb-keyword nil)
-(setq epicsdb-types nil)
-(setq epicsdb-constant nil)
-(setq epicsdb-variable nil)
-(setq epicsdb-function nil)
+;;(setq epics-comments nil)
+(setq epics-keyword nil)
+(setq epics-types nil)
+(setq epics-constant nil)
+(setq epics-variable nil)
+(setq epics-function nil)
 
 
 
-(defvar epicsdb-mode-syntax-table
+(defvar epics-mode-syntax-table
   (let ((st (make-syntax-table)))
     ;; bash style comment: “# …” 
     (modify-syntax-entry ?# "< b" st)
     (modify-syntax-entry ?\n "> b" st)
     st)
-  "Syntax table for `epicsdb-mode'."
+  "Syntax table for `epics-mode'."
   )
 
 
@@ -828,8 +870,8 @@
 ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Faces-for-Font-Lock.html
 ;;
 ;; - font-lock-keyword-face            "purple"
-;; - font-lock-type-face                "ForestGreen"
-;; - font-lock-constant-face               "dark cyan"
+;; - font-lock-type-face               "ForestGreen"
+;; - font-lock-constant-face           "dark cyan"
 ;; - font-lock-variable-name-face      "sienna"
 ;; - font-lock-function-name-face      "blue"
 ;; - font-lock-comment-face            "FireBrick"
@@ -844,13 +886,13 @@
 ;; font-lock-negation-char-face
 
 
-(setq epicsdb-font-lock-keywords
+(setq epics-font-lock-keywords
   `(
-    (,epicsdb-keyword-regexp   . font-lock-keyword-face)
-    (,epicsdb-type-regexp      . font-lock-type-face)
-    (,epicsdb-constant-regexp  . font-lock-constant-face)
-    (,epicsdb-variable-regexp  . font-lock-variable-name-face)
-    (,epicsdb-function-regexp  . font-lock-function-name-face)
+    (,epics-keyword-regexp   . font-lock-keyword-face)
+    (,epics-type-regexp      . font-lock-type-face)
+    (,epics-constant-regexp  . font-lock-constant-face)
+    (,epics-variable-regexp  . font-lock-variable-name-face)
+    (,epics-function-regexp  . font-lock-function-name-face)
    
   
 ))
@@ -859,18 +901,18 @@
 ;; vdb, db, dbd
 ;; http://www.emacswiki.org/emacs/AutoModeAlist
 
-(add-to-list 'auto-mode-alist '("\\.?db?\\'" . epicsdb-mode))
-;;(add-to-list 'auto-mode-alist '("\\.db\\'" . epicsdb-mode))
-;;(add-to-list 'auto-mode-alist '("\\.dbd\\'" . epicsdb-mode))
+(add-to-list 'auto-mode-alist '("\\.?db?\\'" . epics-mode))
+(add-to-list 'auto-mode-alist '("\\.proto\\'" . epics-mode))
+;;(add-to-list 'auto-mode-alist '("\\.dbd\\'" . epics-mode))
 
 
 
 
-;; (defvar epicsdb-indent-offset 4
-;;   "*Indentation offset for `epicsdb-mode'.")
+;; (defvar epics-indent-offset 4
+;;   "*Indentation offset for `epics-mode'.")
 
-;; (defun epicsdb-indent-line ()
-;;   "Indent current line for `epicsdb-mode'."
+;; (defun epics-indent-line ()
+;;   "Indent current line for `epics-mode'."
 ;;   (interactive)
 ;;   (let ((indent-col 0))
 ;;     (save-excursion
@@ -879,14 +921,14 @@
 ;;           (while t
 ;;             (backward-up-list 1)
 ;;             (when (looking-at "[[{]")
-;;               (setq indent-col (+ indent-col epicsdb-indent-offset))))
+;;               (setq indent-col (+ indent-col epics-indent-offset))))
 ;;         (error nil)
 ;; 	)
 ;;       )
 ;;     (save-excursion
 ;;       (back-to-indentation)
-;;       (when (and (looking-at "[[}]") (>= indent-col epicsdb-indent-offset))
-;;         (setq indent-col (- indent-col epicsdb-indent-offset))
+;;       (when (and (looking-at "[[}]") (>= indent-col epics-indent-offset))
+;;         (setq indent-col (- indent-col epics-indent-offset))
 ;; 	)
 ;;       )
 ;;     (indent-line-to indent-col)
@@ -896,27 +938,27 @@
 
 
 ;; define the mode
-(define-derived-mode epicsdb-mode sh-mode
-  "epicsdb mode"
-  "Major mode for editing EPICS DB, DBD, and VDB files …"
-  :syntax-table epicsdb-mode-syntax-table
-  (setq font-lock-defaults '((epicsdb-font-lock-keywords)))
+(define-derived-mode epics-mode sh-mode
+  "epics mode"
+  "Major mode for editing EPICS *DB* and protocol files …"
+  :syntax-table epics-mode-syntax-table
+  (setq font-lock-defaults '((epics-font-lock-keywords)))
 
   (setq comment-start "#")
   (setq comment-start-skip "#+\\s-*")
 
   ;; clear memory
-  (setq epicsdb-keyword nil)
-  (setq epicsdb-types nil)
-  (setq epicsdb-constant nil)
-  (setq epicsdb-variable nil)
-  (setq epicsdb-function nil)
+  (setq epics-keyword nil)
+  (setq epics-types nil)
+  (setq epics-constant nil)
+  (setq epics-variable nil)
+  (setq epics-function nil)
 
-  ;; (make-local-variable 'epicsdb-indent-offset)
-  ;; (setq (make-local-variable 'indent-line-function) 'epicsdb-indent-line)
+  ;; (make-local-variable 'epics-indent-offset)
+  ;; (setq (make-local-variable 'indent-line-function) 'epics-indent-line)
 
 
 )
 
 
-(provide 'epicsdb-mode)
+(provide 'epics-mode)
