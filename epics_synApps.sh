@@ -28,7 +28,7 @@ wget_options="wget -c"
 # xzf  : quiet
 # xzfv : verbose
 # xzfk : don't replace existing files when extracting
-tar_command="tar xzfk "
+tar_command="tar xzf "
 make_command_base=""
 
 
