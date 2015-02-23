@@ -206,9 +206,10 @@ def main():
 #        print ""
         dataresp = urllib2.urlopen(setJsonRetUrl(url) + queryString)
         data = json.load(dataresp)
-        #       print "Total Data Size " , len(data[0]['data'])
+        # print data
+        # print "Total Data Size " , len(data[0]['data'])
         # print ">>> ", data[0]['data'][0]
-        #       print data[0]['data']
+#        print data[0]['data']
     	# # typeInfo = json.load(urllib2.urlopen(setMGMTurl(url) + 'getPVTypeInfo?' + queryString))
         # # if typeInfo: 
         # #     dataStores = typeInfo['dataStores']

@@ -15,11 +15,11 @@
 // RFQ:LT:H01
 
 
-var timeplot1 = null;
-var timeplot2 = null;
-var timeplot3 = null;
-var timeplot4 = null;
-var timeplot5 = null;
+var rfqtimeplot1 = null;
+var rfqtimeplot2 = null;
+var rfqtimeplot3 = null;
+var rfqtimeplot4 = null;
+var rfqtimeplot5 = null;
 
 function onLoad() {
 
@@ -108,8 +108,8 @@ function onLoad() {
  
     ];
     
-    timeplot1 = Timeplot.create(document.getElementById("rfq-timeplot1"), plotInfo1);
-    timeplot1.loadText(monitor1URL, ",", eventSource1);
+    rfqtimeplot1 = Timeplot.create(document.getElementById("rfq-timeplot1"), plotInfo1);
+    rfqtimeplot1.loadText(monitor1URL, ",", eventSource1);
     // timeplot1.loadText(monitor2URL, ",", eventSource2);
 
     
@@ -139,8 +139,8 @@ function onLoad() {
  
     ];
     
-    timeplot2 = Timeplot.create(document.getElementById("rfq-timeplot2"), plotInfo2);
-    timeplot2.loadText(monitor2URL, ",", eventSource2);
+    rfqtimeplot2 = Timeplot.create(document.getElementById("rfq-timeplot2"), plotInfo2);
+    rfqtimeplot2.loadText(monitor2URL, ",", eventSource2);
 
 
     
@@ -170,8 +170,8 @@ function onLoad() {
  
     ];
     
-    timeplot3 = Timeplot.create(document.getElementById("rfq-timeplot3"), plotInfo3);
-    timeplot3.loadText(monitor3URL, ",", eventSource3);
+    rfqtimeplot3 = Timeplot.create(document.getElementById("rfq-timeplot3"), plotInfo3);
+    rfqtimeplot3.loadText(monitor3URL, ",", eventSource3);
     
 
     var valueGeometry4 = new Timeplot.DefaultValueGeometry({
@@ -199,13 +199,15 @@ function onLoad() {
  
     ];
     
-    timeplot4 = Timeplot.create(document.getElementById("rfq-timeplot4"), plotInfo4);
-    timeplot4.loadText(monitor4URL, ",", eventSource4);
+    rfqtimeplot4 = Timeplot.create(document.getElementById("rfq-timeplot4"), plotInfo4);
+    rfqtimeplot4.loadText(monitor4URL, ",", eventSource4);
 
     
     var valueGeometry5 = new Timeplot.DefaultValueGeometry({
         gridColor: gridColor
     	, axisLabelsPlacement: "left"
+	, min: 0
+	, max: 100
     });
     
    
@@ -228,8 +230,8 @@ function onLoad() {
  
     ];
     
-    timeplot5 = Timeplot.create(document.getElementById("rfq-timeplot5"), plotInfo5);
-    timeplot5.loadText(monitor5URL, ",", eventSource5);
+    rfqtimeplot5 = Timeplot.create(document.getElementById("rfq-timeplot5"), plotInfo5);
+    rfqtimeplot5.loadText(monitor5URL, ",", eventSource5);
     
    
     
@@ -242,11 +244,11 @@ function onResize() {
     if (resizeTimerID == null) {
         resizeTimerID = window.setTimeout(function() {
             resizeTimerID = null;
-            if (timeplot1) timeplot1.repaint();
-	    if (timeplot2) timeplot2.repaint();
-            if (timeplot3) timeplot3.repaint();
-            if (timeplot4) timeplot4.repaint();
-	    if (timeplot5) timeplot4.repaint();
+            if (rfqtimeplot1) rfqtimeplot1.repaint();
+	    if (rfqtimeplot2) rfqtimeplot2.repaint();
+            if (rfqtimeplot3) rfqtimeplot3.repaint();
+            if (rfqtimeplot4) rfqtimeplot4.repaint();
+	    if (rfqtimeplot5) rfqtimeplot5.repaint();
          }, 0);
     }
 }

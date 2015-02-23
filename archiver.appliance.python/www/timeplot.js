@@ -37,15 +37,15 @@ function onLoad() {
     var timeGeometry = new Timeplot.DefaultTimeGeometry({
         gridColor: gridColor
 	, axisLabelsPlacement: "top"
-	, min : 0
+//	, min : 0
 
     });
 
     var geometry1 = new Timeplot.DefaultValueGeometry({
         gridColor: gridColor
 	, axisLabelsPlacement: "left"
-	, min : -15
-	, max : 30
+//	, min : -15
+//	, max : 30
     });
 
 
@@ -86,8 +86,8 @@ function onLoad() {
     var geometry2 = new Timeplot.DefaultValueGeometry({
         gridColor: gridColor
 	, axisLabelsPlacement: "left"
-	, min : -15
-	, max : 30
+//	, min : -15
+//	, max : 30
     });
 
 
@@ -128,8 +128,8 @@ function onLoad() {
     var geometry3 = new Timeplot.DefaultValueGeometry({
         gridColor: gridColor
 	, axisLabelsPlacement: "left"
-	, min : -15
-	, max : 30
+//	, min : -15
+//	, max : 30
     });
 
     var eventSource3 = new Timeplot.DefaultEventSource();
@@ -169,7 +169,7 @@ function onLoad() {
     var geometry4 = new Timeplot.DefaultValueGeometry({
         gridColor: gridColor
     	, axisLabelsPlacement: "left"
-    	, min : 0
+  //  	, min : 0
     });
 
     
