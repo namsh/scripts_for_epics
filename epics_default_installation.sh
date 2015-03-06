@@ -394,6 +394,12 @@ case `uname -sm` in
 	make_command_extn="make"
 #	vdct_status=0
 	;;
+    "Linux armv7l")
+	EPICS_HOST_ARCH=linux-arm
+	EXTN_LIB_ARCH=arm-linux-gnueabihf
+	make_command_base="make -j 2"
+	make_command_extn="make"
+	;;
     *)
         echo "This script  doesn't support this architecture : `uname -sm`"
         exit 1
