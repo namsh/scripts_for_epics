@@ -629,6 +629,7 @@
 	"TESV"
 	"ELSV"
 	"TVSV"
+	"TTSV"
 	"FTSV"
 	"FFSV"
 	"ORAW"
@@ -903,6 +904,7 @@
 
 (add-to-list 'auto-mode-alist '("\\.?db?\\'" . epics-mode))
 (add-to-list 'auto-mode-alist '("\\.proto\\'" . epics-mode))
+(add-to-list 'auto-mode-alist '("\\.template\\'". epics-mode))
 ;;(add-to-list 'auto-mode-alist '("\\.dbd\\'" . epics-mode))
 
 
