@@ -38,11 +38,11 @@ git
 ntp
 ntpdate
 screen
-emacs
+emacs-nox
 tree
 mc
-xpdf
-glusterfs-client
+#xpdf
+#glusterfs-client
 clusterssh
 logtail
 python-lxml
@@ -54,8 +54,8 @@ snmp-mibs-downloader
 #
 # Hangul fonts and Printer
 #
-system-config-printer
-fonts-nanum
-fonts-nanum-coding
-fonts-nanum-eco
-fonts-nanum-extra
+#system-config-printer
+#fonts-nanum
+#fonts-nanum-coding
+#fonts-nanum-eco
+#fonts-nanum-extra
