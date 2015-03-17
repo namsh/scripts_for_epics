@@ -1,0 +1,15 @@
+#
+# heavy usage packages for
+# RAON control team
+#
+build-essential
+git
+ntp
+ntpdate
+screen
+tree
+mc
+python-lxml
+rrdtool
+snmp
+snmp-mibs-downloader

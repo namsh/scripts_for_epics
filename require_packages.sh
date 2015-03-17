@@ -1,9 +1,10 @@
 #!/bin/bash
-# Shell  : require_packages.sh
-# Author : Jeong Han Lee
-# email  : jhlee@ibs.re.kr
-# Date   : Monday, March 16 09:12:52 KST 2015
-# version : 0.0.3
+#
+#  Shell   : require_packages.sh
+#  Author  : Jeong Han Lee
+#  email   : jhlee@ibs.re.kr
+#  Date    : Tuesday, March 17 09:34:25 KST 2015
+#  version : 0.0.4
 #
 #   - 0.0.1  December 1 00:01 KST 2014, jhlee
 #           * created
@@ -21,8 +22,12 @@
 #           * comment out "set -e" in order to work at least,
 #             don't know how to handle "if any statement returns
 #             a non-true return value"   
-#             
-#
+#    - 0.0.4 Tuesday, March 17 09:32:53 KST 2015, jhlee
+#     
+#           * seperate packages list according to what he/she want
+#             to install on their environment.          
+#             all, epics, raon, ctrl, dist, and so on...
+# 
 #
 # Some errors are printing while installing.....
 #
@@ -36,20 +41,19 @@
 
 #
 # This will exit your script if you try to use an uninitialised variable
-set -u
-
-
-logfile="/tmp/common_package_installation.log"
-common_filename="package_list_common"
-package_filename=""
-
+#set -u
 
 
 declare -a packagelist
 
+# 1st arg : the packagelist
+# 2nd arg : the logfilename
+
 function aptitude_from_list()
 {
     unset packagelist
+    local i
+    local log=$2
     let i=0
     while IFS= read -r line_data; do
 	if [ "$line_data" ]; then
@@ -60,66 +64,43 @@ function aptitude_from_list()
 	fi
     done < $1
     echo "-----"
-    echo "aptitude  -q --log-level=info --log-file=$logfile --assume-yes install ${packagelist[@]}"
+    echo "aptitude  -q --log-level=info --log-file=${log} --assume-yes install ${packagelist[@]}"
     echo "-----"
-    aptitude  -q --log-level=info --log-file=$logfile --assume-yes install ${packagelist[@]}
+    aptitude  -q --log-level=info --log-file=${log} --assume-yes install ${packagelist[@]}
 }
 
-# #the following logic doesn't handle sudo case....
 
-# user=`whoami`
 
-# case "$whoami" in
-#     root)
-# 	continue;
-# 	;;
-#     *)
-# 	echo >&2
-# 	echo "You should run $0 script with the root privilege" >&2
-# 	echo >&2
-# 	exit 0
-# 	;;
-# esac
 
-#
-# find the current script directory
-#
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-common_filepath=${DIR}/${common_filename}
-
-#
-# update the repository 
-#
-aptitude update
-
-echo "Logfile is saving in $logfile"
-
-#
-# Read the common package list, and install them with the one "aptitude"
-#
-aptitude_from_list ${common_filename}
-#
+# Package List has three categories
+# 1. Required Packages for the only EPICS IOC  : EPICS
+#    package_list_epics
+# 2. Common Packages for a common PC user    : Common
+#    package_list_common
+# 3. Packages dependent upon the Debian distribution (Wheezy, Jessie, etc) : Dist
+#    package_list_${dist}
+# 4. Required package for the RAON control : raon
 
 
 #
 # Check the distribution version of Debian
 #
-version=`lsb_release -c | awk '{print $2}'`
+dist=`lsb_release -c | awk '{print $2}'`
 #echo $version
 
 # add logic to install some packa
-case "$version" in
+case "$dist" in
     wheezy)
 #	echo "Wheezy">&2
-	package_filename="package_list_wheezy"
+#	filename_version="package_list_wheezy"
 	;;
     jessie)
 #	echo "Jessie">&2
-	package_filename="package_list_jessie"
+#	package_filename="package_list_jessie"
 	;;
     *)
 	echo >&2
-	echo "Doesn't support $version" >&2
+	echo "Doesn't support $dist" >&2
 	echo >&2
 	exit 0
 	;;
@@ -127,13 +108,76 @@ esac
 
 
 #
-# Define the log, and read packge list dependent upon the distribution
+# find the script directory where require_packages.sh is
 #
-logfile="/tmp/${version}_package_installation.log"
-echo "Logfile is saving in $logfile"
-package_filepath=${DIR}/${package_filename}
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-#
-# Install the package dependent upon the distribution.
-#
-aptitude_from_list $package_filepath
+
+filename_prefix="package_list"
+
+filename_epics=${DIR}/${filename_prefix}"_epics"
+filename_common=${DIR}/${filename_prefix}"_common"
+filename_dist=${DIR}/${filename_prefix}"_"${dist}
+filename_raon=${DIR}/${filename_prefix}"_raon"
+
+logfile="/tmp/log_require_packages.log"
+
+
+
+# What should we do?
+DO="$1"
+ 
+case "$DO" in
+
+    all)
+	aptitude update
+	aptitude_from_list ${filename_epics} ${logfile}
+	aptitude_from_list ${filename_common} ${logfile}
+	aptitude_from_list ${filename_dist} ${logfile}
+	aptitude_from_list ${filename_raon} ${logfile}
+        ;;
+    ctrl)
+	aptitude update
+	aptitude_from_list ${filename_epics} ${logfile}
+	aptitude_from_list ${filename_raon} ${logfile}
+	;;
+    common)
+	aptitude update
+	aptitude_from_list ${filename_common} ${logfile}
+	;;
+
+    dist)
+	aptitude update
+	aptitude_from_list ${filename_dist} ${logfile}
+	;;
+    epics)
+	aptitude update
+	aptitude_from_list ${filename_epics} ${logfile}
+	;;
+    raon)
+	aptitude update
+	aptitude_from_list ${filename_raon} ${logfile}
+	;;
+    *)
+	echo "">&2
+        echo "usage: $0 <command>" >&2
+        echo >&2
+        echo "  commands: explaination" >&2
+	echo ""
+        echo "          all    : install all packages ">&2
+        echo ""
+	echo "          ctrl   : install Control System packages ">&2
+        echo ""
+        echo "          common : install common Linux packages" >&2
+	echo ""
+	echo "          dist   : install distribution dependent packages" >&2
+	echo ""
+	echo "          epics  : install the required packagesfor EPICS" >&2
+	echo ""
+	echo "          raon   : install the RAON specified packages" >&2
+	echo ""
+        echo >&2
+	exit 0
+        ;;
+esac
+
