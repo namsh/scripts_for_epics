@@ -64,16 +64,20 @@ scripts_for_epics
 
 
 
-2. epicsdb-mode.el
+2. epics-mode.el
 
 
     I intend to develop this emacs mode file for EPICS db, vdb, dbd, proto, template files, because I cannot find any syntax highlighting feature in the EPICS community.
 
-    * put this file in ```bash ${HOME}/.emacs.d/```
+    * go the emacs.d directory in ```bash ${HOME}/.emacs.d/```
+    * make a symbolic link as 
+    ```bash
+    user@host:~/.emacs.d$ ln -s ~/scripts_for_epics/epics-mode.el epics-mode.el
+    ```
     * add the following lines in ```bash ${HOME}/.emacs ```
     ```lisp
        (load-file "$HOME/.emacs.d/epics-mode.el")
-       (require 'epicsdb-mode)
+       (require 'epics-mode)
        ```
 
 
