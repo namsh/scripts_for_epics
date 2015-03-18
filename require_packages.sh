@@ -63,9 +63,9 @@ function aptitude_from_list()
 	    ((++i))
 	fi
     done < $1
-    echo "-----"
+    echo ">>>>>>>>"
     echo "aptitude  -q --log-level=info --log-file=${log} --assume-yes install ${packagelist[@]}"
-    echo "-----"
+    echo "<<<<<<<<"
     aptitude  -q --log-level=info --log-file=${log} --assume-yes install ${packagelist[@]}
 }
 
@@ -131,15 +131,15 @@ case "$DO" in
 
     all)
 	aptitude update
-	aptitude_from_list ${filename_epics} ${logfile}
+	aptitude_from_list ${filename_epics}  ${logfile}
 	aptitude_from_list ${filename_common} ${logfile}
-	aptitude_from_list ${filename_dist} ${logfile}
-	aptitude_from_list ${filename_raon} ${logfile}
+	aptitude_from_list ${filename_dist}   ${logfile}
+	aptitude_from_list ${filename_raon}   ${logfile}
         ;;
     ctrl)
 	aptitude update
-	aptitude_from_list ${filename_epics} ${logfile}
-	aptitude_from_list ${filename_raon} ${logfile}
+	aptitude_from_list ${filename_epics}  ${logfile}
+	aptitude_from_list ${filename_raon}   ${logfile}
 	;;
     common)
 	aptitude update
@@ -148,15 +148,15 @@ case "$DO" in
 
     dist)
 	aptitude update
-	aptitude_from_list ${filename_dist} ${logfile}
+	aptitude_from_list ${filename_dist}   ${logfile}
 	;;
     epics)
 	aptitude update
-	aptitude_from_list ${filename_epics} ${logfile}
+	aptitude_from_list ${filename_epics}  ${logfile}
 	;;
     raon)
 	aptitude update
-	aptitude_from_list ${filename_raon} ${logfile}
+	aptitude_from_list ${filename_raon}   ${logfile}
 	;;
     *)
 	echo "">&2
