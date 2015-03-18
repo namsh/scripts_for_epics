@@ -98,19 +98,19 @@ scripts_for_epics
 
   
 4. Here is the quick installation log 
-```bash
-user@:~$ git clone https://github.com/jeonghanlee/scripts_for_epics
-user@:~$ cd scripts_for_epics/
-user@:~/scripts_for_epics$ su
-Password: 
-root@:{HOME}/scripts_for_epics# bash require_packages.sh 
-root@:{HOME}/scripts_for_epics# exit
-user@:~/scripts_for_epics$ bash epics_default_installation.sh 
-user@:~/scripts_for_epics$ cd ../epics/R3.14.12.4/
-user@:~/epics/R3.14.12.4$ ls
-base  extensions  setEpicsEnv.sh
-user@:~/epics/R3.14.12.4$ . setEpicsEnv.sh 
-```
+   ```bash
+   user@:~$ git clone https://github.com/jeonghanlee/scripts_for_epics
+   user@:~$ cd scripts_for_epics/
+   user@:~/scripts_for_epics$ su
+   Password: 
+   root@:{HOME}/scripts_for_epics# bash require_packages.sh all
+   root@:{HOME}/scripts_for_epics# exit
+   user@:~/scripts_for_epics$ bash epics_default_installation.sh 
+   user@:~/scripts_for_epics$ cd ../epics/R3.14.12.4/
+   user@:~/epics/R3.14.12.4$ ls
+   base  extensions  setEpicsEnv.sh
+   user@:~/epics/R3.14.12.4$ . setEpicsEnv.sh 
+   ```
 
   The installation log file is located in 
   * /tmp/log_require_packages.log 
