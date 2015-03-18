@@ -15,9 +15,10 @@ scripts_for_epics
 
 
   * Must install the following packages via root or sudo
-    before running this script
+    before running this script with mandatory input argument(s).
 
     See require_packages_sh
+    
 
 
   * EPICS Base and extensionTop
@@ -66,22 +67,30 @@ scripts_for_epics
 2. epicsdb-mode.el
 
 
-    I intend to develop this emacs mode file for EPICS db, vdb, and dbd files, because I cannot find any syntax highlighting feature in the EPICS community.
+    I intend to develop this emacs mode file for EPICS db, vdb, dbd, proto, template files, because I cannot find any syntax highlighting feature in the EPICS community.
 
     * put this file in ```bash ${HOME}/.emacs.d/```
     * add the following lines in ```bash ${HOME}/.emacs ```
     ```lisp
-       (load-file "$HOME/.emacs.d/epicsdb-mode.el")
+       (load-file "$HOME/.emacs.d/epics-mode.el")
        (require 'epicsdb-mode)
        ```
 
 
 3. require_packages.sh
 
-    This script reads two of three package list files such as package_list_wheezy, package_list_jessie, package_list_common. The distribution of Debian
-    wheezy or jessie will be selected via lsb_release  command. And install all required packages for EPICS base and extensions and RAON default packages without asking questions. 
-
-
+    This script reads four package list files such as package_list_{epics, common, raon, {wheezy, jessi}}.
+    The distribution of Debian wheezy or jessie will be selected via lsb_release  command. 
+    ```bash
+    usage: require_packages.sh <command>
+      commands: explaination
+          all    : install all packages 
+          ctrl   : install Control System packages 
+          common : install common Linux packages
+          dist   : install distribution dependent packages
+          epics  : install the required packagesfor EPICS
+          raon   : install the RAON specified packages
+   ```
 
   
 4. Here is the quick installation log 
@@ -99,11 +108,9 @@ base  extensions  setEpicsEnv.sh
 user@:~/epics/R3.14.12.4$ . setEpicsEnv.sh 
 ```
 
-  The installation log files for require_packages.sh are located in 
-  * /tmp/common_package_installation.log 
-    and 
-  * /tmp/wheezy_package_installation.log
-
+  The installation log file is located in 
+  * /tmp/log_require_packages.log 
+  
 
 4. epics_synApps.sh will install the synApps as the following way:
 
