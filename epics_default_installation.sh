@@ -86,6 +86,9 @@
 #          * remove the condition for vdct
 #            , because we can run vdct on R.Pi. 
 #
+#  - 0.2.0 Wednesday, March 25 08:49:18 KST 2015, jhlee
+#          * the default EPICS base 3.14.12.5 
+#          
 
 # cq   : quiet 
 # c    : verbose
@@ -95,7 +98,8 @@ wget_options="wget -c"
 tar_command="tar xzf"
 #nproc_command="nproc -all"
 
-this_script_version="0.1.4"
+this_script_version="0.2.0"
+
 this_script_name=`basename $0`
 LOGDATE=`date +%Y.%m.%d.%H:%M`
 host_name=${HOSTNAME}
@@ -109,7 +113,8 @@ current_epics_path=""
 current_raon_sitelibs=""
 current_raon_siteapps=""
 
-default_version="3.14.12.4"
+#default_version="3.14.12.4"
+default_version="3.14.12.5"
 make_command_base=""
 make_command_extn=""
 vdct_status=""

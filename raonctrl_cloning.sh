@@ -10,7 +10,7 @@
 # This will exit your script if you try to use an uninitialised variable
 set -u
 
-cd ${EPICS_BASE}
+cd ${EPICS_PATH}
 
 git clone http://github.com/RaonControl/siteLibs
 git clone http://github.com/RaonControl/siteApps
