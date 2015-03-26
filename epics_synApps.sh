@@ -49,6 +49,17 @@ make_synApps()
     sed -i~ "s|^SUPPORT=.*|SUPPORT=${synApps_dir}|g" "${synApps_release}"
     sed -i  "s|^EPICS_BASE=.*|EPICS_BASE=${EPICS_BASE}|g" "${synApps_release}"
 
+
+    case `uname -sm` in
+	"Linux armv*")
+	    sed -i  "s|^AREA_DETECTOR=.*|#AREA_DETECTOR=.*|g" "${synApps_release}"
+	    sed -i  "s|^DXP=.*|#DXP=.*|g" "${synApps_release}"
+	    ;;
+	*)
+            ;;
+    esac
+
+
     make release
     make clean uninstall
     make -j
