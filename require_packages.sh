@@ -28,6 +28,9 @@
 #             to install on their environment.          
 #             all, epics, raon, ctrl, dist, and so on...
 # 
+#    - 0.0.5 Thursday, March 26 10:11:37 KST 2015, jhlee
+#           * reduce the argu option to simply the installation procedure
+#
 #
 # Some errors are printing while installing.....
 #
@@ -140,24 +143,25 @@ case "$DO" in
 	aptitude update
 	aptitude_from_list ${filename_epics}  ${logfile}
 	aptitude_from_list ${filename_raon}   ${logfile}
+	aptitude_from_list ${filename_dist}   ${logfile}
 	;;
     common)
 	aptitude update
 	aptitude_from_list ${filename_common} ${logfile}
 	;;
 
-    dist)
-	aptitude update
-	aptitude_from_list ${filename_dist}   ${logfile}
-	;;
-    epics)
-	aptitude update
-	aptitude_from_list ${filename_epics}  ${logfile}
-	;;
-    raon)
-	aptitude update
-	aptitude_from_list ${filename_raon}   ${logfile}
-	;;
+#    dist)
+#	aptitude update
+#	aptitude_from_list ${filename_dist}   ${logfile}
+#	;;
+ #   epics)
+#	aptitude update
+#	aptitude_from_list ${filename_epics}  ${logfile}
+#	;;
+#    raon)
+#	aptitude update
+#	aptitude_from_list ${filename_raon}   ${logfile}
+#	;;
     *)
 	echo "">&2
         echo "usage: $0 <command>" >&2
@@ -166,16 +170,16 @@ case "$DO" in
 	echo ""
         echo "          all    : install all packages ">&2
         echo ""
-	echo "          ctrl   : install Control System packages ">&2
+	echo "          ctrl*  : install Control System packages ">&2
         echo ""
         echo "          common : install common Linux packages" >&2
 	echo ""
-	echo "          dist   : install distribution dependent packages" >&2
-	echo ""
-	echo "          epics  : install the required packagesfor EPICS" >&2
-	echo ""
-	echo "          raon   : install the RAON specified packages" >&2
-	echo ""
+#	echo "          dist   : install distribution dependent packages" >&2
+#	echo ""
+#	echo "          epics  : install the required packagesfor EPICS" >&2
+#	echo ""
+#	echo "          raon   : install the RAON specified packages" >&2
+#	echo ""
         echo >&2
 	exit 0
         ;;
