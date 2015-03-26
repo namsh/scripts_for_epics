@@ -29,7 +29,7 @@ wget_options="wget -c"
 # xzfv : verbose
 # xzfk : don't replace existing files when extracting
 tar_command="tar xzf "
-make_command_base=""
+make_command=""
 
 
 make_synApps()
@@ -51,18 +51,46 @@ make_synApps()
 
 
     case `uname -sm` in
-	"Linux armv*")
+	"Linux i386" | "Linux i486" | "Linux i586" | "Linux i686")
+            EPICS_HOST_ARCH=linux-x86
+	    EXTN_LIB_ARCH=i386-linux-gnu
 	    sed -i  "s|^AREA_DETECTOR=.*|#AREA_DETECTOR=.*|g" "${synApps_release}"
 	    sed -i  "s|^DXP=.*|#DXP=.*|g" "${synApps_release}"
+	    make_command="make -j"
+            ;;
+	"Linux x86_64")
+            EPICS_HOST_ARCH=linux-x86_64
+	    EXTN_LIB_ARCH=x86_64-linux-gnu
+	    make_command="make -j"
+            ;;
+	"Linux armv6l")
+	    EPICS_HOST_ARCH=linux-arm
+	    EXTN_LIB_ARCH=arm-linux-gnueabihf
+	    sed -i  "s|^AREA_DETECTOR=.*|#AREA_DETECTOR=.*|g" "${synApps_release}"
+	    sed -i  "s|^DXP=.*|#DXP=.*|g" "${synApps_release}"
+	# 
+	# There are missing header files when make -j is used on 
+	# Raspberry Pi 
+	# Tuesday, August 26 14:44:43 KST 2014, jhlee
+	# 
+	    make_command="make"
+	    ;;
+	"Linux armv7l")
+	    EPICS_HOST_ARCH=linux-arm
+	    EXTN_LIB_ARCH=arm-linux-gnueabihf
+	    sed -i  "s|^AREA_DETECTOR=.*|#AREA_DETECTOR=.*|g" "${synApps_release}"
+	    sed -i  "s|^DXP=.*|#DXP=.*|g" "${synApps_release}"
+	    make_command="make -j 2"
 	    ;;
 	*)
+            echo "This script  doesn't support this architecture : `uname -sm`"
+            exit 1
             ;;
     esac
-
-
+    
     make release
     make clean uninstall
-    make -j
+    $make_command
 }
 
 
