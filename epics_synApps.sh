@@ -12,7 +12,12 @@
 #                   instead of modules. epicsLibs will be used
 #                   for other EPICS driven libraries (EtherIP,
 #                   and so on ....)
-#
+#           0.0.3 
+#                 - remove AREA_DETECTOR, DXP on linux-arm architecture
+# 
+#         
+#           0.0.4 Monday, March 30 07:32:40 KST 2015, jhlee
+#                 - change the default synApps as 5_8
 
 
 ## This tells bash that it should exit the script if any statement returns a non-true return value. 
@@ -54,8 +59,8 @@ make_synApps()
 	"Linux i386" | "Linux i486" | "Linux i586" | "Linux i686")
             EPICS_HOST_ARCH=linux-x86
 	    EXTN_LIB_ARCH=i386-linux-gnu
-	    sed -i  "s|^AREA_DETECTOR=.*|#AREA_DETECTOR=.*|g" "${synApps_release}"
-	    sed -i  "s|^DXP=.*|#DXP=.*|g" "${synApps_release}"
+#	    sed -i  "s|^AREA_DETECTOR=.*|#AREA_DETECTOR=.*|g" "${synApps_release}"
+#	    sed -i  "s|^DXP=.*|#DXP=.*|g" "${synApps_release}"
 	    make_command="make -j"
             ;;
 	"Linux x86_64")
@@ -117,10 +122,10 @@ mkdir -p ${current_modules_path}
 #  http://www.aps.anl.gov/bcda/synApps/
 #
 #
-# http://www.aps.anl.gov/bcda/synApps/tar/synApps_5_7.tar.gz
+# http://www.aps.anl.gov/bcda/synApps/tar/synApps_5_8.tar.gz
 
 
-synApps_version="5_7"
+synApps_version="5_8"
 synApps_name="synApps_${synApps_version}"
 synApps_filename="${synApps_name}.tar.gz"
 synApps_download_site="http://www.aps.anl.gov/bcda/synApps/tar/"

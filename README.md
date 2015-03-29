@@ -84,16 +84,16 @@ scripts_for_epics
 3. require_packages.sh
 
     This script reads four package list files such as package_list_{epics, common, raon, {wheezy, jessi}}.
-    The distribution of Debian wheezy or jessie will be selected via lsb_release  command. 
+    The distribution of Debian wheezy or jessie will be selected via lsb-release  command. 
     ```bash
     usage: require_packages.sh <command>
       commands: explaination
+  commands: explaination
+
           all    : install all packages 
-          ctrl   : install Control System packages 
+          ctrl*  : install Control System packages 
           common : install common Linux packages
-          dist   : install distribution dependent packages
-          epics  : install the required packagesfor EPICS
-          raon   : install the RAON specified packages
+
    ```
 
   
