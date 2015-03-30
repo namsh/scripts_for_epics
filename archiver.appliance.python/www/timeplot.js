@@ -33,6 +33,7 @@ function onLoad() {
     var monitor2URL = "./data/munji-pi1_ds1820.txt";
     var monitor3URL = "./data/munji-pi2_ds1820.txt";
     var monitor4URL = "./data/munji-pi1_dust.txt";
+    var monitor5URL = "./data/ecr11-diag_fc01_measurecurrent.txt";
 
     var timeGeometry = new Timeplot.DefaultTimeGeometry({
         gridColor: gridColor
@@ -205,6 +206,36 @@ function onLoad() {
     timeplot4 = Timeplot.create(document.getElementById("timeplot4"), plotInfo4);
     timeplot4.loadText(monitor4URL, ",", eventSource4);
 
+
+
+    var geometry5 = new Timeplot.DefaultValueGeometry({
+        gridColor: gridColor
+    	, axisLabelsPlacement: "left"
+  //  	, min : 0
+    });
+
+    
+
+    var eventSource5 = new Timeplot.DefaultEventSource();
+    var dataSource5  = new Timeplot.ColumnSource(eventSource5,1);
+
+    var plotInfo5 = [
+    	Timeplot.createPlotInfo
+    	({
+    	    id: "Current"
+    	    , dataSource: dataSource5
+    	    , timeGeometry: timeGeometry
+    	    , valueGeometry: geometry5
+    	    , lineColor: red
+    	    , showValues: true
+    	    , roundValues: false
+    	})
+
+    ];
+    
+    timeplot5 = Timeplot.create(document.getElementById("timeplot5"), plotInfo5);
+    timeplot5.loadText(monitor5URL, ",", eventSource5);
+
 }
 
 
@@ -220,6 +251,7 @@ function onResize() {
             if (timeplot2) timeplot2.repaint();
             if (timeplot3) timeplot3.repaint();
             if (timeplot4) timeplot4.repaint();
+            if (timeplot4) timeplot5.repaint();
         }, 0);
     }
 }
