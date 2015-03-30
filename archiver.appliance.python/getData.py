@@ -99,8 +99,9 @@ def getSelectedPVs(url, args):
     #
     #   Want to use "list" because pv_list, which is "return values from AA" is list
     #    
-
-    input_filename = os.getcwd() +"/" + args.file
+    script_path = os.path.dirname(os.path.realpath(__file__))
+#    input_filename = os.getcwd() +"/" + args.file
+    input_filename = script_path + "/" + args.file
 
     lines = [line.strip() for line in open(input_filename)]
 
