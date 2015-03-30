@@ -4,8 +4,8 @@
 # Shell   : getData.py
 # Author  : Jeong Han Lee
 # email   : jhlee@ibs.re.kr
-# Date    : Friday, December 19 10:18:02 KST 2014
-# Version : 0.1.0
+# Date    : Monday, March 30 09:36:19 KST 2015
+# Version : 0.2.0
 #
 #   * I intend to develop this script in order to extact or get data from
 #     Archiver Appliance Service, which is running on an Ethernet accessiable
@@ -39,6 +39,15 @@
 #  - 0.1.1  Monday, December 22 19:19:27 KST 2014
 #           Real Working Script...
 #
+#  - 0.2.0  Monday, March 30 09:36:52 KST 2015, jhlee
+#           - Export the selected PV lists based on the input PV list (as input file)
+#           - Clean up some lines in code, such as the argument default values, unused variables, 
+
+#
+#
+#
+#
+#
 #     crontab -e, add the following line
 #
 #* *  * * * export DISPLAY=:0.0 && /usr/bin/python /where/the/script/is/getData.py >/dev/null 2>&1
@@ -65,34 +74,13 @@ def convertDate(epoch_secs):
     _date = datetime.fromtimestamp(epoch_secs)
     return _date.isoformat()
 
-#    s = ''.join(dataList)
-    
 
 def setMGMTurl(url):
     return url + "/mgmt/bpl/"
 
 
-def getAllPVs(url, patterns):
-    applianceMGMTUrl= url + "/mgmt/bpl/getAllPVs"
-    pv_list= []
-
-    #    print "patterns :", patterns
-    #    print "mgmturl  :", applianceMGMTUrl
-    #    print patterns.split()
-
-    for pattern in patterns.split():
-#        print pattern
-#        print urllib.urlencode({"pv" : pattern})
-        resp = urllib2.urlopen(url= applianceMGMTUrl + "?" + urllib.urlencode({"pv" : pattern}))
-        matchingPVs = json.load(resp)
-        pv_list.extend(matchingPVs)
-
-    return pv_list
-
-
 def print_data_info(element):
     #  {u'nanos': 887037220, u'status': 0, u'secs': 1418979266, u'severity': 0, u'val': 24.0}
-    
 #    print element.nanos
     return 
 
@@ -102,28 +90,63 @@ def setJsonRetUrl(url):
 def setRawRetUrl(url):
     return url + "/retrieval/data/getData.raw"
 
+
+
+def getSelectedPVs(url, args):
+
+    pv_list = []
+    applianceMGMTUrl= url + "/mgmt/bpl/getAllPVs"
+    #
+    #   Want to use "list" because pv_list, which is "return values from AA" is list
+    #    
+
+    input_filename = os.getcwd() +"/" + args.file
+
+    lines = [line.strip() for line in open(input_filename)]
+
+    #    print type(lines),  lines
+    #    print "mgmturl  :", applianceMGMTUrl
+    #    print patterns.split()
+
+    for args.pattern in args.pattern.split():
+        #      print urllib.urlencode({"pv" : args.pattern})
+
+        resp = urllib2.urlopen(url= applianceMGMTUrl + "?" + urllib.urlencode({"pv" : args.pattern}))
+
+        matchingPVs = json.load(resp)
+
+        pv_list.extend(matchingPVs)
+
+
+#    print type(lines), pv_list
+#    print set(pv_list).intersection(set(lines))
+#
+#   https://docs.python.org/2/library/stdtypes.html#set.intersection
+#   Compare two lists in python and return matches
+#
+    return set(pv_list).intersection(set(lines))
+
+
+
+
 def main():
 
-#   https://docs.python.org/2/howto/argparse.html
+    #   https://docs.python.org/2/howto/argparse.html
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--ip", help="This is the URL for appliance")
-    parser.add_argument("-p", "--pattern", help="PVs patterns")
-    parser.add_argument("-v", "--verbose", action="store_true", help="increase output verbosity")
-    parser.add_argument("-d", "--days", type=float, help="how many days do you want to monitor from now")
+
+    parser.add_argument("-i", "--ip",      help="Archiver Appliance IP address", default="10.1.5.14")
+    parser.add_argument("-p", "--pattern", help="PVs patterns, case sensitive",  default ="*")
+    parser.add_argument("-v", "--verbose", help="output verbosity",              action="store_true")
+    parser.add_argument("-d", "--days",    help="days to monitor from now", type=float, default=7.0)
+    parser.add_argument("-f", "--file",    help="filename which has selected PV list",  default="munji_pv_list")
+
     args = parser.parse_args()
 
-    if not args.ip :
-        args.ip = "10.1.4.173"
-
-    # if(len(args.pattern) > 1):
-    #     PVPatterns.extend(args.pattern))
-    if not args.pattern :
-        args.pattern = "*"
-        
-    if not args.days :
-        args.days = 7.0
+    # if not args.pattern :
+    #     args.pattern = "*"
 
     url = "http://" + args.ip + ":17665"
+
     if args.verbose:
         print ""
         print ">>>" 
@@ -134,132 +157,120 @@ def main():
         
 
     matchingPVs = []
-    matchingPVs =  getAllPVs(url, args.pattern)
-
-#    print "Total length" , len(matchingPVs)
-
-    _now = datetime.now()
-    
-#    print "now : ", _now
-    _td = timedelta(days=args.days)
-    _from = _now - _td
-#    _from = datetime(2014,12,19,17,40,00,00)
-
-
-#    _from_string = _from.strftime("%Y-%m-%dT%H:%M:%S")
-#    _now_string  = _now.strftime ("%Y-%m-%dT%H:%M:%S")
-#    "From" and "To" have the iso time format at  http://epicsarchiverap.sourceforge.net/userguide.html
-#    Python datetime has the isoformat at https://docs.python.org/2/library/datetime.html
-#   Monday, December 22 13:42:51 KST 2014, jhlee
-
-    _from_iso_string = _from.isoformat()
-    _now_iso_string  = _now.isoformat()
+    matchingPVs = getSelectedPVs(url, args)
     
 
-    fromString = urllib.urlencode( {'from' : _from_iso_string} ) 
-    toString   = urllib.urlencode( {'to'   : _now_iso_string } )
- #   userString = urllib.urlencode( {'userreduced' : "true"} )
+    if matchingPVs:
 
+        _now  = datetime.now()
+        _from = _now - timedelta(days=args.days)
 
-#   Still don't understand what the following Strings means,
-#   get the structure form archiveViewer, and simply add only 
-#   magicString to queryString  
-#  
-#   Monday, December 22 10:40:19 KST 2014, jhlee
-#
-    magicString = "%2B09%3A00"
-    # http://en.wikipedia.org/wiki/Percent-encoding
-    # %2B : "+"
-    # %3A : ":"
-    # userString  = "&usereduced=true"
-    # cahowString = "&ca_how=0"
-    # cacountString = "&ca_count=1907"
-
-    suffixString = magicString
-    # suffixString = magicString# + userString + cahowString + cacountString
-
-    if args.verbose:
-        print "fromString : ",  fromString
-        print "toString   : ",  toString
-        print "userString : ",  userString
-        print ""
-
-    hostname = socket.gethostname() 
-    hostip   = socket.gethostbyname(hostname)
-    
-    report_filename = ""
-    dest_directory = "/var/www/data/"
-
-    for pv in sorted(matchingPVs):
+        _from_iso_string = _from.isoformat()
+        _now_iso_string  = _now.isoformat()
         
-        report_filename = "/tmp/" + pv.replace(":", "_").lower() + ".txt"
-        queryString = '?pv=mean_300(' + pv + ')'
-        queryString += '&'
-        queryString += fromString
-        queryString += magicString
-        queryString += '&'
-        queryString += toString 
-        queryString += suffixString
+        fromString       = urllib.urlencode( {'from' : _from_iso_string} ) 
+        toString         = urllib.urlencode( {'to'   : _now_iso_string } )
 
-        #+ From + To
-#        print queryString
-#        print ""
-        dataresp = urllib2.urlopen(setJsonRetUrl(url) + queryString)
-        data = json.load(dataresp)
-        # print data
-        # print "Total Data Size " , len(data[0]['data'])
-        # print ">>> ", data[0]['data'][0]
-#        print data[0]['data']
-    	# # typeInfo = json.load(urllib2.urlopen(setMGMTurl(url) + 'getPVTypeInfo?' + queryString))
-        # # if typeInfo: 
-        # #     dataStores = typeInfo['dataStores']
-        # #     print dataStores
-
+        #   userString = urllib.urlencode( {'userreduced' : "true"} )
+        
+        #    _from        = datetime(2014,12,19,17,40,00,00)
+        #    _from_string = _from.strftime("%Y-%m-%dT%H:%M:%S")
+        #    _now_string  = _now.strftime ("%Y-%m-%dT%H:%M:%S")
+        #    "From" and "To" have the iso time format at  http://epicsarchiverap.sourceforge.net/userguide.html
+        #    Python datetime has the isoformat at https://docs.python.org/2/library/datetime.html
+        #    Monday, December 22 13:42:51 KST 2014, jhlee
+        
 
         
-        try :
-            file = open(report_filename, "w")
-            file.write("# \n")
-            file.write("# Filename    : " + report_filename + "\n")
-            file.write("# PV name     : " + pv + "\n")
-            file.write("# From        : " + _from_iso_string + "\n")
-            file.write("# To          : " + _now_iso_string + "\n")
-            file.write("# queryString : " + queryString + "\n")
-            file.write("# hostname    : " + hostname + "\n")
-            file.write("# host IP     : " + hostip   + "\n")
-            file.write("# \n")
-            file.write("# time, val, nanos, status, severity\n")
+        #   Still don't understand what the following Strings means,
+        #   get the structure form archiveViewer, and simply add only 
+        #   magicString to queryString  
+        #  
+        #   Monday, December 22 10:40:19 KST 2014, jhlee
+        #
+        magicString = "%2B09%3A00"
+        # http://en.wikipedia.org/wiki/Percent-encoding
+        # %2B : "+"
+        # %3A : ":"
+        # userString  = "&usereduced=true"
+        # cahowString = "&ca_how=0"
+        # cacountString = "&ca_count=1907"
+        
+        suffixString = magicString
+        # suffixString = magicString# + userString + cahowString + cacountString
+        
+        if args.verbose:
+            print "fromString : ",  fromString
+            print "toString   : ",  toString
+        #        print "userString : ",  userString
+            print ""
+            
+        hostname = socket.gethostname() 
+        hostip   = socket.gethostbyname(hostname)
+            
+        report_filename = ""
+        dest_directory = "/var/www/data/"
+        
+        for pv in sorted(matchingPVs):
 
-            dataList = []
+            report_filename = "/tmp/" + pv.replace(":", "_").lower() + ".txt"
+            #       locat test 
+#            report_filename = "tmp/" + pv.replace(":", "_").lower() + ".txt"
+            
+            queryString  = '?pv=mean_300(' + pv + ')'
+            queryString += '&'
+            queryString += fromString 
+            queryString += magicString
+            queryString += '&'
+            queryString += toString 
+            queryString += suffixString
+            
+            dataresp = urllib2.urlopen(setJsonRetUrl(url) + queryString)
+            data     = json.load(dataresp)
 
-            for el in data[0]['data']:
-
-#               print type(el) ; returns <type 'dict'> 
-
-
-#               print el; returns {u'nanos': 887056444, u'status': 0, u'secs': 1418979584, u'severity': 0, u'val': 25.0}
-#
-#                print "%s, %s  \n" % (el['secs'], datetime.fromtimestamp(el['secs']))
-
-                dataList.append("%s, %s, %s, %s, %s \n" % (convertDate(el['secs']), el['val'], el['nanos'], el['status'], el['severity']))
-
+            # print data
+            # print "Total Data Size " , len(data[0]['data'])
+            # print ">>> ", data[0]['data'][0]
+            #        print data[0]['data']
+            # # typeInfo = json.load(urllib2.urlopen(setMGMTurl(url) + 'getPVTypeInfo?' + queryString))
+            # # if typeInfo: 
+            # #     dataStores = typeInfo['dataStores']
+            # #     print dataStores
+            
+            try :
+                file = open(report_filename, "w")
+                file.write("# \n")
+                file.write("# Filename    : " + report_filename  + "\n")
+                file.write("# PV name     : " + pv               + "\n")
+                file.write("# From        : " + _from_iso_string + "\n")
+                file.write("# To          : " + _now_iso_string  + "\n")
+                file.write("# queryString : " + queryString      + "\n")
+                file.write("# hostname    : " + hostname         + "\n")
+                file.write("# host IP     : " + hostip           + "\n")
+                file.write("# \n")
+                file.write("# time, val, nanos, status, severity    \n")
                 
-            s = ''.join(dataList)
-            file.write(s)
-            file.close()
+                dataList = []
 
- 
-            shutil.copy (report_filename, dest_directory)
+                for el in data[0]['data']:
+                    #               print type(el) ; returns <type 'dict'> 
+                    #               print el; returns {u'nanos': 887056444, u'status': 0, u'secs': 1418979584, u'severity': 0, u'val': 25.0}
+                    #               print "%s, %s  \n" % (el['secs'], datetime.fromtimestamp(el['secs']))
+                    dataList.append("%s, %s, %s, %s, %s \n" % (convertDate(el['secs']), el['val'], el['nanos'], el['status'], el['severity']))
+                    
+                s = ''.join(dataList)
 
-        except IOError, (errno, strerror):
-            print "I/O error(%s): %s" % (errno, strerror)
+                file.write(s)
+                file.close()
 
+#           need to comment out, if one wants to test this script with user accounts
+#           Monday, March 30 09:32:22 KST 2015, jhlee
+# 
+                shutil.copy (report_filename, dest_directory)
+#
 
-
-        # plot(secs, vals, "r-")
-        # xscale('time')
-        # show()
-
+            except IOError, (errno, strerror):
+                print "I/O error(%s): %s" % (errno, strerror)
 
 
     sys.exit()
