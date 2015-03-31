@@ -1,6 +1,8 @@
-#if [ -f ~/.bash_aliases ]; then
+#
+# 
+# if [ -f ~/.bash_aliases ]; then
 #    . ~/.bash_aliases
-#fi
+# fi
 
 
 alias vi='vim'
@@ -50,10 +52,40 @@ alias epicsenv=". ~/epics/R3.14.12.5/setEpicsEnv.sh"
 
 
 goApps() {
-#	 . ~/epics/R3.14.12.5/setEpicsEnv.sh	
-	 cd $RAON_SITEAPPS
-	 cd $1
+
+    if [ -z ${RAON_SITEAPPS} ]; then
+	echo "No EPICS environment variables are found. Force to set the default one."
+	echo "~/epics/R3.14.12.5/setEpicsEnv.sh"
+	echo ""
+	. ~/epics/R3.14.12.5/setEpicsEnv.sh
+    fi
+
+    if [[ $# -eq 0 ]] ; then
+	cd ${RAON_SITEAPPS}
+    else
+	cd ${RAON_SITEAPPS}
+	cd $1
+    fi
 }
+
+
+goLibs() {
+
+    if [ -z ${RAON_SITELIBS} ]; then
+	echo "No EPICS environment variables are found. Force to set the default one."
+	echo "~/epics/R3.14.12.5/setEpicsEnv.sh"
+	echo ""
+	. ~/epics/R3.14.12.5/setEpicsEnv.sh
+    fi
+
+    if [[ $# -eq 0 ]] ; then
+	cd ${RAON_SITELIBS}
+    else
+	cd ${RAON_SITELIBS}
+	cd $1
+    fi
+}
+
 
 
 goKeithley(){
