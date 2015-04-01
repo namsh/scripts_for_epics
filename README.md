@@ -83,19 +83,20 @@ scripts_for_epics
 
 3. require_packages.sh
 
+
+
     This script reads four package list files such as package_list_{epics, common, raon, {wheezy, jessi}}.
     The distribution of Debian wheezy or jessie will be selected via lsb-release  command. 
     ```bash
     usage: require_packages.sh <command>
       commands: explaination
-  commands: explaination
 
           all    : install all packages 
           ctrl*  : install Control System packages 
           common : install common Linux packages
 
    ```
-
+   Note that one needs to install *lsb-release* on Raspberry Pi. 
   
 4. Here is the quick installation log 
    ```bash
