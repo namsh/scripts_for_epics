@@ -902,11 +902,17 @@
 ;; vdb, db, dbd
 ;; http://www.emacswiki.org/emacs/AutoModeAlist
 
-(add-to-list 'auto-mode-alist '("\\.?db?\\'" . epics-mode))
+(add-to-list 'auto-mode-alist '("\\.?db\\'" . epics-mode))
 (add-to-list 'auto-mode-alist '("\\.proto\\'" . epics-mode))
 (add-to-list 'auto-mode-alist '("\\.template\\'". epics-mode))
-;;(add-to-list 'auto-mode-alist '("\\.dbd\\'" . epics-mode))
+(add-to-list 'auto-mode-alist '("\\.dbd\\'" . epics-mode))
 
+
+;; (autoload 'markdown-mode "markdown-mode"
+;;    "Major mode for editing Markdown files" t)
+;; (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+;; (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+;; (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 
 
