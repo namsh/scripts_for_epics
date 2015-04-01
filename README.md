@@ -172,3 +172,11 @@ scripts_for_epics
 
 ```
   
+5. StripTool 2.5.16.0 Patch
+   Within the StripTool2_5_16_0, for example,
+  ```bash 
+   /home/jhlee/epics/R3.14.12.5/extensions/src/StripTool2_5_16_0
+
+   $ patch -p1 < ~/scripts_for_epics/StripTool2_5_16_0.patch
+   ```
+   
