@@ -1,15 +1,15 @@
 # How to Setup .bash_aliases into your environment
 
-** Step 1 **
+## Step 1 
   Select one of the following methods 
 
 1.0 copy .bash_aliases in $HOME
 
 1.1 in $HOME, make symbolic link to point .bash_aliases
 
-    $ ln -s ~/scripts_for_epics/linux.conf/bash/.bash_aliases
+    $ ln -s ~/scripts_for_epics/linux.conf/bash/.bash_aliases $HOME/.bash_aliases
 
-** Step 2 **
+## Step 2 
 
 2.  Edit .bashrc to put the following lines 
 
@@ -19,13 +19,13 @@
    fi
 ```
 
-** Step 3 **
+## Step 3 
 
    Reopen the terminal or source .bashrc
 
 # How to use the most interesting features 
 
-** goApps **
+## goApps 
 
 The command *goApps* brings your position to $RAON_SITEAPPS
 
@@ -55,7 +55,7 @@ jhlee@kaffee:~/epics/R3.14.12.5/siteApps$
 ```
 
 
-** goLibs **
+## goLibs 
 
 It is the same purpose command for $RAON_SITELIBS.
 
@@ -64,7 +64,7 @@ jhlee@kaffee:~$ goLibs configure
 jhlee@kaffee:~/epics/R3.14.12.5/siteLibs/configure$ 
 ```
 
-** goIOC **
+## goIOC 
 
 Bring you to iocBoot/ioc$argument directory
 ```bash
@@ -72,7 +72,7 @@ jhlee@kaffee:~$ goIoc snmp2
 jhlee@kaffee:~/epics/R3.14.12.5/siteApps/snmp2/iocBoot/iocsnmp2$ 
 ```
 
-** runIoc **
+## runIoc 
 
 Run IOC for $argument 
 
