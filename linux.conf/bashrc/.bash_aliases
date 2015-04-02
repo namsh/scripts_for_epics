@@ -87,18 +87,36 @@ goLibs() {
 }
 
 
-
-goKeithley(){
-	goApps keithley6514
-}
-
 goIoc() {
 	goApps $1
 	cd iocBoot/ioc$1
 }
 
+
+
 runIoc() {
-      	 goIoc $1
-	 ./st.cmd
+
+    local ioc_name=$1
+    goIoc ${ioc_name}
+    case `uname -sm` in
+	"Linux i386" | "Linux i486" | "Linux i586" | "Linux i686")
+	    EPICS_HOST_ARCH=linux-x86
+	    ;;
+	"Linux x86_64")
+	    EPICS_HOST_ARCH=linux-x86_64
+	    ;;
+	"Linux armv6l")
+	    EPICS_HOST_ARCH=linux-arm
+	    ;;
+	"Linux armv7l")
+	    EPICS_HOST_ARCH=linux-arm
+	    ;;
+	*)
+	    echo "This doesn't support this architecture : `uname -sm`"
+	    exit 1
+	    ;;
+    esac
+    
+    ../../bin/${EPICS_HOST_ARCH}/${ioc_name} st.cmd
  	 
 }
