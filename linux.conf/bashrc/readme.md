@@ -7,7 +7,7 @@
 
 1.1 in $HOME, make symbolic link to point .bash_aliases
 
-    $ ln -s ~/scripts_for_epics/linux.conf/bash/.bash_aliases
+    $ ln -s ~/scripts_for_epics/linux.conf/bash/.bash_aliases $HOME/.bash_aliases
 
 ** Step 2 **
 
